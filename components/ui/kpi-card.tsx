@@ -31,7 +31,7 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
   return (
     <div
       className={cn(
-        "flex flex-col justify-center rounded-xl border bg-white p-6",
+        "flex flex-col justify-center rounded-xl border bg-card p-5 transition-all hover:bg-muted/5",
         className
       )}
       {...rest}
@@ -41,13 +41,13 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
           "flex",
           inlineLabel
             ? "items-baseline gap-1.5"
-            : "flex-col items-center justify-center"
+            : "flex-col items-start justify-center"
         )}
       >
         <span
           className={cn(
-            "font-semibold text-slate-900",
-            inlineLabel ? "text-[22px]" : "text-5xl"
+            "font-bold tracking-tight text-foreground",
+            inlineLabel ? "text-xl" : "text-3xl"
           )}
         >
           {mainValue}
@@ -57,8 +57,8 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
             className={cn(
               "font-medium",
               inlineLabel
-                ? "text-[15px] text-slate-700"
-                : "mt-2 text-[13px] text-slate-500"
+                ? "text-sm text-muted-foreground"
+                : "mt-0.5 text-[13px] tracking-tight text-muted-foreground/60"
             )}
           >
             {mainValueLabel}
@@ -67,27 +67,27 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
       </div>
 
       {hasSegments && (
-        <div className="mt-5 flex w-full flex-col gap-3.5">
-          <div className="flex h-[6px] w-full gap-0.5">
+        <div className="mt-4 flex w-full flex-col gap-3">
+          <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-muted/40 gap-0.5">
             {segments?.map((segment) => {
               const widthPerc = total > 0 ? (segment.value / total) * 100 : 0
               return (
                 <div
                   key={segment.id}
                   className={cn(
-                    "h-full rounded-full transition-all duration-500",
+                    "h-full transition-all duration-500",
                     segment.colorClass
                   )}
                   style={{
                     width: `${widthPerc}%`,
-                    minWidth: widthPerc > 0 ? "4px" : "0",
+                    minWidth: widthPerc > 0 ? "2px" : "0",
                   }}
                 />
               )
             })}
           </div>
 
-          <div className="flex flex-nowrap items-center gap-x-2.5 gap-y-2 text-[12px] font-medium text-slate-500">
+          <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-1.5 text-[11px] font-semibold text-muted-foreground">
             {segments?.map((segment) => (
               <div
                 key={segment.id}
@@ -95,19 +95,14 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
               >
                 <div
                   className={cn(
-                    "h-2.5 w-2.5 shrink-0 rounded-full",
+                    "h-1.5 w-1.5 shrink-0 rounded-full",
                     segment.colorClass
                   )}
                 />
-                <span className="font-semibold text-slate-800">
-                  {segment.value}
-                </span>
-                {segment.percentage !== undefined && (
-                  <span className="font-semibold text-slate-800">
-                    ({segment.percentage}%)
-                  </span>
-                )}
-                <span>{segment.label}</span>
+                <div className="flex gap-1 items-center">
+                  <span className="text-foreground">{segment.value}</span>
+                  <span className="text-[10px] opacity-60 font-normal">{segment.label}</span>
+                </div>
               </div>
             ))}
           </div>

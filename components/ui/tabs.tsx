@@ -4,6 +4,8 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Tabs as TabsPrimitive } from "radix-ui"
 
+import { motion } from "motion/react"
+
 import { cn } from "@/lib/utils"
 
 function Tabs({
@@ -57,22 +59,54 @@ function TabsList({
 
 function TabsTrigger({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Trigger>) {
   return (
-    <TabsPrimitive.Trigger
-      data-slot="tabs-trigger"
+    <TabsPrimitive.Trigger data-slot="tabs-trigger" {...props} asChild>
+      <TabsTriggerInner className={className}>{children}</TabsTriggerInner>
+    </TabsPrimitive.Trigger>
+  )
+}
+
+const TabsTriggerInner = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<"button"> & { "data-state"?: string }
+>(({ className, children, ...props }, ref) => {
+  const isActive = props["data-state"] === "active"
+
+  return (
+    <button
+      ref={ref}
       className={cn(
-        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap text-foreground/60 transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
-        "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
-        "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
+        "relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap text-foreground transition-all hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 dark:text-muted-foreground dark:hover:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "group-data-[variant=default]/tabs-list:data-[state=active]:text-white",
+        "group-data-[variant=line]/tabs-list:data-[state=active]:text-primary",
         className
       )}
       {...props}
-    />
+    >
+      {isActive && (
+        <motion.div
+          layoutId="tabs-indicator"
+          className={cn(
+            "absolute inset-0 z-0",
+            "group-data-[variant=default]/tabs-list:rounded-md group-data-[variant=default]/tabs-list:bg-primary dark:group-data-[variant=default]/tabs-list:bg-input/30",
+            "group-data-[variant=line]/tabs-list:bg-transparent",
+            "group-data-[variant=line]/tabs-list:after:absolute group-data-[variant=line]/tabs-list:after:bg-primary",
+            "group-data-horizontal/tabs:group-data-[variant=line]/tabs-list:after:inset-x-0 group-data-horizontal/tabs:group-data-[variant=line]/tabs-list:after:-bottom-px group-data-horizontal/tabs:group-data-[variant=line]/tabs-list:after:h-0.5",
+            "group-data-vertical/tabs:group-data-[variant=line]/tabs-list:after:inset-y-0 group-data-vertical/tabs:group-data-[variant=line]/tabs-list:after:-right-1 group-data-vertical/tabs:group-data-[variant=line]/tabs-list:after:w-0.5"
+          )}
+          transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
+        />
+      )}
+      <span className="relative z-10 flex items-center justify-center gap-1.5">
+        {children}
+      </span>
+    </button>
   )
-}
+})
+TabsTriggerInner.displayName = "TabsTriggerInner"
 
 function TabsContent({
   className,

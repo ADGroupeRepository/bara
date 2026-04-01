@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
+import Link from "next/link"
 import {
   MoreHorizontal,
   Search,
@@ -14,7 +15,11 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
 import {
   Table,
   TableBody,
@@ -75,15 +80,13 @@ function SortableHeader({
       onClick={() => onSort(sortKeyName)}
     >
       {label}
-      {isActive ? (
-        sortDirection === "asc" ? (
-          <ChevronUp className="h-3.5 w-3.5" />
-        ) : (
-          <ChevronDown className="h-3.5 w-3.5" />
-        )
-      ) : (
-        <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />
+      {isActive && sortDirection === "asc" && (
+        <ChevronUp className="h-3.5 w-3.5" />
       )}
+      {isActive && sortDirection === "desc" && (
+        <ChevronDown className="h-3.5 w-3.5" />
+      )}
+      {!isActive && <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />}
     </button>
   )
 }
@@ -441,21 +444,25 @@ export function EmployeesList() {
 
       {/* Toolbar */}
       <div className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between">
-        <Input
-          placeholder="Rechercher un collaborateur..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value)
-            setCurrentPage(1)
-          }}
-          className="h-11 w-[380px] px-4"
-        />
+        <InputGroup className="h-10 w-[380px]">
+          <InputGroupAddon>
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </InputGroupAddon>
+          <InputGroupInput
+            placeholder="Rechercher un collaborateur..."
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              setSearchTerm(e.target.value)
+              setCurrentPage(1)
+            }}
+          />
+        </InputGroup>
         <div className="flex items-center gap-2">
           {hasActiveFilters && (
             <Button
               variant="ghost"
               onClick={clearFilters}
-              className="h-11 text-muted-foreground"
+              className="h-10 text-muted-foreground"
             >
               <X className="h-4 w-4" />
               Réinitialiser
@@ -468,7 +475,7 @@ export function EmployeesList() {
               <Button
                 variant="outline"
                 className={cn(
-                  "h-11 px-4",
+                  "h-10 px-4",
                   filterDepartment && "border-foreground/30"
                 )}
               >
@@ -499,7 +506,7 @@ export function EmployeesList() {
               <Button
                 variant="outline"
                 className={cn(
-                  "h-11 px-4",
+                  "h-10 px-4",
                   filterContract && "border-foreground/30"
                 )}
               >
@@ -530,7 +537,7 @@ export function EmployeesList() {
               <Button
                 variant="outline"
                 className={cn(
-                  "h-11 px-4",
+                  "h-10 px-4",
                   filterStatus && "border-foreground/30"
                 )}
               >
@@ -555,7 +562,9 @@ export function EmployeesList() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button className="h-11 px-4 shadow-none">Nouvel Employé</Button>
+          <Button className="h-10 px-4 shadow-none" asChild>
+            <Link href="/rh/employees/new">Nouvel Employé</Link>
+          </Button>
         </div>
       </div>
 
@@ -643,9 +652,10 @@ export function EmployeesList() {
                       "text-xs font-medium",
                       employee.contract === "CDI" &&
                         "bg-primary/10 text-primary",
-                      employee.contract === "CDD" && "bg-teal-50 text-teal-700",
+                      employee.contract === "CDD" &&
+                        "bg-primary/5 text-primary/80",
                       employee.contract === "Stage" &&
-                        "bg-slate-100 text-slate-600"
+                        "bg-muted text-muted-foreground"
                     )}
                   >
                     {employee.contract}
@@ -656,17 +666,19 @@ export function EmployeesList() {
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        employee.status === "Actif" && "bg-emerald-500",
-                        employee.status === "En congé" && "bg-amber-400",
-                        employee.status === "Télétravail" && "bg-sky-400"
+                        employee.status === "Actif" && "bg-primary",
+                        employee.status === "En congé" &&
+                          "bg-muted-foreground/40",
+                        employee.status === "Télétravail" && "bg-primary/60"
                       )}
                     />
                     <span
                       className={cn(
-                        "text-sm",
-                        employee.status === "Actif" && "text-emerald-700",
-                        employee.status === "En congé" && "text-amber-600",
-                        employee.status === "Télétravail" && "text-sky-600"
+                        "text-sm font-medium",
+                        employee.status === "Actif" && "text-foreground",
+                        employee.status === "En congé" &&
+                          "text-muted-foreground",
+                        employee.status === "Télétravail" && "text-primary"
                       )}
                     >
                       {employee.status}
@@ -706,9 +718,22 @@ export function EmployeesList() {
       {/* Pagination & Info */}
       <div className="flex items-center justify-between pt-5 text-sm text-muted-foreground">
         <span>
-          {processedEmployees.length === 0
-            ? "Aucun résultat"
-            : `${(currentPage - 1) * ITEMS_PER_PAGE + 1}\u2013${Math.min(currentPage * ITEMS_PER_PAGE, processedEmployees.length)} sur ${processedEmployees.length} collaborateur${processedEmployees.length > 1 ? "s" : ""}`}
+          {processedEmployees.length === 0 ? (
+            "Aucun résultat"
+          ) : (
+            <>
+              {(currentPage - 1) * ITEMS_PER_PAGE + 1}
+              {"\u2013"}
+              {Math.min(
+                currentPage * ITEMS_PER_PAGE,
+                processedEmployees.length
+              )}
+              {" sur "}
+              {processedEmployees.length}
+              {" collaborateur"}
+              {processedEmployees.length > 1 ? "s" : ""}
+            </>
+          )}
         </span>
         {totalPages > 1 && (
           <div className="flex items-center gap-1">
