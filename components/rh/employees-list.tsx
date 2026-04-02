@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react"
 import Link from "next/link"
 import {
-  MoreHorizontal,
   Search,
   ChevronDown,
   ChevronLeft,
@@ -563,7 +562,7 @@ export function EmployeesList() {
           </DropdownMenu>
 
           <Button className="h-10 px-4 shadow-none" asChild>
-            <Link href="/rh/employees/new">Nouvel Employé</Link>
+            <Link href="/rh/employees/new">Nouveau Collaborateur</Link>
           </Button>
         </div>
       </div>
@@ -692,22 +691,9 @@ export function EmployeesList() {
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-[160px]">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Voir le profil</DropdownMenuItem>
-                      <DropdownMenuItem>Modifier</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="font-medium text-destructive">
-                        Supprimer
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button variant="outline" size="sm" className="h-8">
+                    Consulter
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}

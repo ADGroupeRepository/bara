@@ -79,7 +79,7 @@ export function ModuleNav() {
       {/* Spacer for fixed nav */}
       <div className="h-screen w-[72px] shrink-0" />
 
-      <nav className="fixed top-0 left-0 z-60 flex h-screen w-[72px] flex-col items-center border-r bg-muted py-4">
+      <nav className="fixed top-0 left-0 z-40 flex h-screen w-[72px] flex-col items-center border-r bg-muted py-4">
         {/* Logo compact */}
         <div className="mb-4 flex h-10 w-10 shrink-0 items-center justify-center">
           <TooltipProvider>

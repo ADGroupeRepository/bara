@@ -16,7 +16,7 @@ export function ModuleSideNav({ module }: ModuleSideNavProps) {
     <>
       <div className="h-screen min-w-[250px]" />
 
-      <nav className="fixed left-[72px] top-0 z-50 h-screen min-w-[250px] overflow-y-auto border-r bg-background px-4 py-4">
+      <nav className="fixed left-[72px] top-0 z-30 h-screen min-w-[250px] overflow-y-auto border-r bg-background px-4 py-4">
         <div className="flex h-full flex-col">
           <Link href={`/${module.slug}`} className="flex items-center gap-x-2">
             <Image

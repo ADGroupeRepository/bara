@@ -1,16 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import { Info, ChevronLeft, Plus, Briefcase, FileText } from "lucide-react"
+import { Info, ChevronLeft, Briefcase, FileText } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { DesignationsTab } from "@/components/rh/settings/designations-tab"
+import { ContractTypesTab } from "@/components/rh/settings/contract-types-tab"
 
 export default function EmployeeSettingsPage() {
   return (
@@ -46,9 +47,9 @@ export default function EmployeeSettingsPage() {
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-xs">
                 <p>
-                  Paramétrage centralisé des structures de postes, des catégories
-                  d&apos;emploi et des modèles de contrats applicables à
-                  l&apos;ensemble des collaborateurs.
+                  Paramétrage centralisé des structures de postes, des
+                  catégories d&apos;emploi et des modèles de contrats
+                  applicables à l&apos;ensemble des collaborateurs.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -60,7 +61,7 @@ export default function EmployeeSettingsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="postes" className="space-y-4">
+      <Tabs defaultValue="postes">
         <TabsList
           variant="line"
           className="h-11 w-full justify-start gap-8 rounded-none border-b px-0"
@@ -75,48 +76,12 @@ export default function EmployeeSettingsPage() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="postes" className="space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Postes (Désignations)</CardTitle>
-                <CardDescription>
-                  Gérez les différents intitulés de postes au sein de l&apos;organisation.
-                </CardDescription>
-              </div>
-              <Button size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
-                Nouveau Poste
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-dashed p-8 text-center text-muted-foreground">
-                La liste des postes s&apos;affichera ici.
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="postes" className="pt-4">
+          <DesignationsTab />
         </TabsContent>
 
-        <TabsContent value="types" className="space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Types de contrat</CardTitle>
-                <CardDescription>
-                  Définissez les différents types de contrats de travail (CDI, CDD, etc.).
-                </CardDescription>
-              </div>
-              <Button size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
-                Nouveau Type
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-dashed p-8 text-center text-muted-foreground">
-                La liste des types de contrat s&apos;affichera ici.
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="types" className="pt-4">
+          <ContractTypesTab />
         </TabsContent>
       </Tabs>
     </div>

@@ -10,7 +10,9 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className="flex h-screen bg-white dark:bg-slate-950 overflow-hidden">
         <ModuleNav />
-        {children}
+        <div className="flex-1 min-w-0 h-full overflow-hidden">
+          {children}
+        </div>
       </div>
     </SidebarProvider>
   )
