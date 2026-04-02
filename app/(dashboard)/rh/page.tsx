@@ -6,7 +6,7 @@ export default function RhPage() {
   return (
     <ModuleHomepage
       moduleName="Ressources Humaines"
-      searchPlaceholder="Rechercher un employé..."
+      searchPlaceholder="Rechercher un collaborateur..."
       description="Gérez le personnel, les congés et l'organisation de votre structure"
       accentColor="violet"
     />
