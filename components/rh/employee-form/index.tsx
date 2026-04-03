@@ -12,16 +12,17 @@ import { StepIdentity } from "./steps/step-identity"
 import { StepContract } from "./steps/step-contract"
 import { StepDocuments } from "./steps/step-documents"
 import { StepNotes } from "./steps/step-notes"
+import type { StepFormProps } from "./schema"
 
 export function EmployeeForm() {
   const form = useEmployeeForm()
 
-  const stepFormProps = {
+  const stepFormProps: StepFormProps = {
     register: form.register,
     errors: form.errors,
     watch: form.watch,
     setValue: form.setValue,
-    control: form.control,
+    control: form.control as unknown as StepFormProps["control"],
     handleSelectChange: form.handleSelectChange,
   }
 

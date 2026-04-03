@@ -76,7 +76,7 @@ export const employeeSchema = z.object({
       rib: z.string().optional(),
       telephone: z.string().optional(),
       operateur: z.string().optional(),
-      estPrincipal: z.boolean().default(false),
+      estPrincipal: z.boolean(),
     })
   ),
   indemniteTransport: z.string().optional(),
@@ -147,6 +147,6 @@ export type StepFormProps = {
   errors: FieldErrors<EmployeeFormData>
   watch: UseFormWatch<EmployeeFormData>
   setValue: UseFormSetValue<EmployeeFormData>
-  control: Control<EmployeeFormData>
+  control: Control<EmployeeFormData, unknown, EmployeeFormData>
   handleSelectChange: (field: keyof EmployeeFormData, value: string) => void
 }
