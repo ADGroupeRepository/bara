@@ -84,10 +84,8 @@ export const modules: ModuleConfig[] = [
         icon: "Building",
         items: [
           { name: "Collaborateurs", href: "/rh/employees" },
-          { name: "Branches", href: "/rh/branches" },
-          { name: "Départements", href: "/rh/departments" },
-          { name: "Groupes de collaborateurs", href: "/rh/employee-groups" },
-          { name: "Assurance", href: "/rh/health-insurance" },
+          { name: "Équipes", href: "/rh/teams" },
+          { name: "Entreprise", href: "/rh/company" },
           { name: "Organigramme", href: "/rh/org-chart" },
         ],
       },
