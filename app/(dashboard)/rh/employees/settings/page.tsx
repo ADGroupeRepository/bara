@@ -1,7 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { Info, ChevronLeft, Briefcase, FileText } from "lucide-react"
+import {
+  Info,
+  ChevronLeft,
+  Briefcase,
+  FileText,
+  Layers,
+  Tags,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -12,6 +19,8 @@ import {
 } from "@/components/ui/tooltip"
 import { DesignationsTab } from "@/components/rh/settings/designations-tab"
 import { ContractTypesTab } from "@/components/rh/settings/contract-types-tab"
+import { GradesTab } from "@/components/rh/settings/grades-tab"
+import { CategoriesTab } from "@/components/rh/settings/categories-tab"
 
 export default function EmployeeSettingsPage() {
   return (
@@ -61,14 +70,19 @@ export default function EmployeeSettingsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="postes">
-        <TabsList
-          variant="line"
-          className="h-11 w-full justify-start gap-8 rounded-none border-b px-0"
-        >
+      <Tabs defaultValue="postes" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="postes" className="gap-2">
             <Briefcase className="h-4 w-4" />
             Postes
+          </TabsTrigger>
+          <TabsTrigger value="grades" className="gap-2">
+            <Layers className="h-4 w-4" />
+            Grades
+          </TabsTrigger>
+          <TabsTrigger value="categories" className="gap-2">
+            <Tags className="h-4 w-4" />
+            Catégories
           </TabsTrigger>
           <TabsTrigger value="types" className="gap-2">
             <FileText className="h-4 w-4" />
@@ -78,6 +92,14 @@ export default function EmployeeSettingsPage() {
 
         <TabsContent value="postes" className="pt-4">
           <DesignationsTab />
+        </TabsContent>
+
+        <TabsContent value="grades" className="pt-4">
+          <GradesTab />
+        </TabsContent>
+
+        <TabsContent value="categories" className="pt-4">
+          <CategoriesTab />
         </TabsContent>
 
         <TabsContent value="types" className="pt-4">

@@ -691,8 +691,10 @@ export function EmployeesList() {
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="outline" size="sm" className="h-8">
-                    Consulter
+                  <Button variant="outline" size="sm" className="h-8" asChild>
+                    <Link href={`/rh/employees/${employee.id}`}>
+                      Consulter
+                    </Link>
                   </Button>
                 </TableCell>
               </TableRow>
