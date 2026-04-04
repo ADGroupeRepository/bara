@@ -6,13 +6,7 @@ import type {
   FieldArrayWithId,
 } from "react-hook-form"
 
-import {
-  Plus,
-  Trash2,
-  CreditCard,
-  Smartphone,
-  Banknote,
-} from "lucide-react"
+import { Plus, Trash2, CreditCard, Smartphone, Banknote } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -55,7 +49,7 @@ export function StepContract({
   return (
     <div className="space-y-8">
       {/* ── Informations Professionnelles ──────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Informations Professionnelles</CardTitle>
           <CardDescription>
@@ -86,8 +80,7 @@ export function StepContract({
 
           <Field data-invalid={!!errors.departement}>
             <FieldLabel>
-              Département / Service{" "}
-              <span className="text-destructive">*</span>
+              Département / Service <span className="text-destructive">*</span>
             </FieldLabel>
             <Select
               value={watch("departement")}
@@ -120,8 +113,7 @@ export function StepContract({
 
           <Field data-invalid={!!errors.dateEmbauche}>
             <FieldLabel>
-              Date d&apos;embauche{" "}
-              <span className="text-destructive">*</span>
+              Date d&apos;embauche <span className="text-destructive">*</span>
             </FieldLabel>
             <Input
               type="date"
@@ -201,7 +193,7 @@ export function StepContract({
       </Card>
 
       {/* ── Salaire & Primes ──────────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Salaire & Primes</CardTitle>
           <CardDescription>
@@ -239,9 +231,7 @@ export function StepContract({
             <FieldLabel>Fréquence de paiement</FieldLabel>
             <Select
               value={watch("frequencePaiement")}
-              onValueChange={(v) =>
-                handleSelectChange("frequencePaiement", v)
-              }
+              onValueChange={(v) => handleSelectChange("frequencePaiement", v)}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Sélectionner" />
@@ -275,7 +265,7 @@ export function StepContract({
       </Card>
 
       {/* ── Informations de Paiement ──────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div className="space-y-1">
             <CardTitle>Informations de Paiement</CardTitle>
@@ -329,7 +319,7 @@ export function StepContract({
                     {watch(`methodesPaiement.${index}.estPrincipal`) && (
                       <Badge
                         variant="secondary"
-                        className="h-5 px-1.5 text-[10px] uppercase tracking-wider"
+                        className="h-5 px-1.5 text-[10px] tracking-wider uppercase"
                       >
                         Principal
                       </Badge>
@@ -337,7 +327,7 @@ export function StepContract({
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-medium uppercase text-muted-foreground">
+                      <span className="text-[10px] font-medium text-muted-foreground uppercase">
                         Principal
                       </span>
                       <Switch
@@ -403,9 +393,7 @@ export function StepContract({
                         <FieldLabel>Banque</FieldLabel>
                         <Input
                           placeholder="Nom de la banque"
-                          {...register(
-                            `methodesPaiement.${index}.banque`
-                          )}
+                          {...register(`methodesPaiement.${index}.banque`)}
                         />
                       </Field>
                       <Field>
@@ -432,14 +420,9 @@ export function StepContract({
                       <Field>
                         <FieldLabel>Opérateur</FieldLabel>
                         <Select
-                          value={watch(
-                            `methodesPaiement.${index}.operateur`
-                          )}
+                          value={watch(`methodesPaiement.${index}.operateur`)}
                           onValueChange={(v) =>
-                            setValue(
-                              `methodesPaiement.${index}.operateur`,
-                              v
-                            )
+                            setValue(`methodesPaiement.${index}.operateur`, v)
                           }
                         >
                           <SelectTrigger className="w-full">
@@ -462,9 +445,7 @@ export function StepContract({
                         <Input
                           type="tel"
                           placeholder="+225 00 00 00 00"
-                          {...register(
-                            `methodesPaiement.${index}.telephone`
-                          )}
+                          {...register(`methodesPaiement.${index}.telephone`)}
                         />
                       </Field>
                     </>

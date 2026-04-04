@@ -1,4 +1,4 @@
-import { Info, Building2, MapPin, Network, Settings2 } from "lucide-react"
+import { Info, Building2, MapPin, Network } from "lucide-react"
 
 import {
   Tooltip,
@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { GeneralInfoTab } from "@/components/rh/company/general-info-tab"
 import { SitesTab } from "@/components/rh/company/sites-tab"
 import { DepartmentsTab } from "@/components/rh/company/departments-tab"
-import { StructuralSettingsTab } from "@/components/rh/company/structural-settings-tab"
 
 export default function CompanyPage() {
   return (
@@ -38,7 +37,7 @@ export default function CompanyPage() {
       </div>
       
       <Tabs defaultValue="general" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="general" className="gap-2">
             <Building2 className="h-4 w-4" />
             Informations générales
@@ -50,10 +49,6 @@ export default function CompanyPage() {
           <TabsTrigger value="deps" className="gap-2">
             <Network className="h-4 w-4" />
             Départements
-          </TabsTrigger>
-          <TabsTrigger value="structure" className="gap-2">
-            <Settings2 className="h-4 w-4" />
-            Paramètres structurels
           </TabsTrigger>
         </TabsList>
 
@@ -67,10 +62,6 @@ export default function CompanyPage() {
 
         <TabsContent value="deps" className="pt-4">
           <DepartmentsTab />
-        </TabsContent>
-
-        <TabsContent value="structure" className="pt-4">
-          <StructuralSettingsTab />
         </TabsContent>
       </Tabs>
     </div>

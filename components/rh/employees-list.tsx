@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   Search,
   ChevronDown,
@@ -18,6 +19,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
+  InputGroupButton,
 } from "@/components/ui/input-group"
 import {
   Table,
@@ -281,6 +283,7 @@ const ALL_CONTRACTS: Employee["contract"][] = ["CDI", "CDD", "Stage"]
 const ALL_STATUSES: Employee["status"][] = ["Actif", "En congé", "Télétravail"]
 
 export function EmployeesList() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterDepartment, setFilterDepartment] = useState<string | null>(null)
   const [filterContract, setFilterContract] = useState<string | null>(null)
@@ -455,6 +458,21 @@ export function EmployeesList() {
               setCurrentPage(1)
             }}
           />
+          {searchTerm && (
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                size="icon-xs"
+                variant="ghost"
+                onClick={() => {
+                  setSearchTerm("")
+                  setCurrentPage(1)
+                }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3.5 w-3.5" />
+              </InputGroupButton>
+            </InputGroupAddon>
+          )}
         </InputGroup>
         <div className="flex items-center gap-2">
           {hasActiveFilters && (
@@ -605,18 +623,26 @@ export function EmployeesList() {
                   onSort={handleSort}
                 />
               </TableHead>
-              <TableHead className="text-right font-semibold text-foreground">
+              <TableHead className="font-semibold text-foreground">
                 Actions
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginatedEmployees.map((employee) => (
-              <TableRow key={employee.id} className="group transition-colors">
+              <TableRow
+                key={employee.id}
+                className="group cursor-pointer transition-colors hover:bg-muted/50"
+                onClick={() => router.push(`/rh/employees/${employee.id}`)}
+              >
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9 border border-border">
-                      <AvatarImage src={employee.avatar} alt={employee.name} />
+                    <Avatar className="h-16 w-16 rounded border">
+                      <AvatarImage
+                        src={employee.avatar}
+                        alt={employee.name}
+                        className="rounded"
+                      />
                       <AvatarFallback className="bg-muted text-xs font-medium text-muted-foreground">
                         {employee.name
                           .split(" ")
@@ -690,11 +716,17 @@ export function EmployeesList() {
                     <span className="text-sm">{employee.joinDate}</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
-                  <Button variant="outline" size="sm" className="h-8" asChild>
-                    <Link href={`/rh/employees/${employee.id}`}>
-                      Consulter
-                    </Link>
+                <TableCell>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                    asChild
+                  >
+                    <Link href={`/rh/employees/${employee.id}`}>Consulter</Link>
                   </Button>
                 </TableCell>
               </TableRow>

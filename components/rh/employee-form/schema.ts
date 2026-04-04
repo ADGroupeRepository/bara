@@ -116,7 +116,7 @@ export const STEPS: readonly StepConfig[] = [
   { id: "identite", label: "Identité & Contact", icon: User },
   { id: "contrat", label: "Contrat & Salaire", icon: Briefcase },
   { id: "dossier", label: "Dossier & Formation", icon: FileText },
-  { id: "notes", label: "Notes & Santé", icon: StickyNote },
+  { id: "notes", label: "Détails Personnels", icon: StickyNote },
 ]
 
 export const STEP_FIELDS: Record<number, (keyof EmployeeFormData)[]> = {

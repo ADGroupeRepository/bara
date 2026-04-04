@@ -5,36 +5,9 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 import clsx from "clsx"
 import { motion, AnimatePresence } from "motion/react"
+import { ChevronDown } from "lucide-react"
 import { Icons } from "./icons"
 import type { ModuleConfig, SidebarLink } from "@/lib/modules"
-
-// Generic sidebar icons using Lucide-style (reuse existing Icons where possible, fallback to Lucide)
-import {
-  Folder,
-  Share2,
-  Clock,
-  Calendar,
-  CheckSquare,
-  Building2,
-  Tag,
-  ArrowLeftRight,
-  ShoppingCart,
-  FileText,
-  Receipt,
-  Wallet,
-  Package,
-  BarChart3,
-  LayoutGrid,
-  MapPin,
-  Map,
-  UserPlus,
-  Network,
-  Banknote,
-  GraduationCap,
-  TrendingUp,
-  Files,
-  ChevronDown,
-} from "lucide-react"
 
 // Map icon strings to actual components
 const iconMap: Record<string, React.ElementType> = {
@@ -48,30 +21,29 @@ const iconMap: Record<string, React.ElementType> = {
   People: Icons.People,
   Message: Icons.Message,
   Settings: Icons.Settings,
-  Folder: Folder,
-  Share: Share2,
-  Clock: Clock,
-  Calendar: Calendar,
-  Check: CheckSquare,
-  Building: Building2,
-  Tag: Tag,
-  Transfer: ArrowLeftRight,
-  Cart: ShoppingCart,
-  FileText: FileText,
-  Receipt: Receipt,
-  Wallet: Wallet,
-  Package: Package,
-  Chart: BarChart3,
-  Kanban: LayoutGrid,
-  MapPin: MapPin,
-  Map: Map,
-  UserPlus: UserPlus,
-  Structure: Network,
-  Payroll: Banknote,
-  Training: GraduationCap,
-  Performance: TrendingUp,
-  Documents: Files,
-  Expenses: Receipt,
+  Folder: Icons.Folder,
+  Share: Icons.Share,
+  Clock: Icons.Clock,
+  Calendar: Icons.Calendar,
+  CalendarRemove: Icons.CalendarRemove,
+  Building: Icons.Building,
+  Tag: Icons.Tag,
+  Transfer: Icons.Transfer,
+  Cart: Icons.Cart,
+  FileText: Icons.FileText,
+  Receipt: Icons.Receipt,
+  Wallet: Icons.Wallet,
+  Package: Icons.Package,
+  Chart: Icons.Chart,
+  Kanban: Icons.Kanban,
+  MapPin: Icons.MapPin,
+  Map: Icons.Map,
+  UserSearch: Icons.UserSearch,
+  Refresh: Icons.Refresh,
+  Structure: Icons.Structure,
+  Dollar: Icons.Dollar,
+  Training: Icons.Training,
+  Documents: Icons.Documents,
 }
 
 interface ModuleSidebarLinksProps {
@@ -84,11 +56,15 @@ export function ModuleSidebarLinks({ module }: ModuleSidebarLinksProps) {
   const [manuallyToggled, setManuallyToggled] = useState(false)
 
   // Initialize open menu based on active pathname if not manually toggled
-  const currentActiveMenu = module.sidebarLinks.find(
-    (link) => link.items?.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))
+  const currentActiveMenu = module.sidebarLinks.find((link) =>
+    link.items?.some(
+      (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
+    )
   )?.name
 
-  const effectiveOpenMenu = manuallyToggled ? openMenuName : (openMenuName || currentActiveMenu)
+  const effectiveOpenMenu = manuallyToggled
+    ? openMenuName
+    : openMenuName || currentActiveMenu
 
   // Toggle state
   const toggleMenu = (name: string) => {
@@ -112,22 +88,24 @@ export function ModuleSidebarLinks({ module }: ModuleSidebarLinksProps) {
           <button
             onClick={() => toggleMenu(link.name)}
             className={clsx(
-              "flex items-center w-full px-2 py-2 text-[13px] rounded-lg transition-colors group",
+              "group flex w-full items-center rounded-lg px-2 py-2 text-[13px] transition-colors",
               isOpen || isAnyChildActive
-                ? "bg-sky-100 text-sky-800 font-medium"
+                ? "bg-sky-100 font-medium text-sky-800"
                 : "text-slate-600 hover:bg-slate-100"
             )}
           >
             <IconComponent
               className={clsx(
                 "mr-2 h-5 w-5 shrink-0 stroke-[1.2]",
-                isOpen || isAnyChildActive ? "text-sky-800" : "text-slate-400 group-hover:text-slate-500"
+                isOpen || isAnyChildActive
+                  ? "text-sky-800"
+                  : "group-hover:text-slate-500"
               )}
             />
             <span className="flex-1 text-left">{link.name}</span>
             <ChevronDown
               className={clsx(
-                "ml-2 h-4 w-4 transition-transform duration-200 text-slate-400",
+                "ml-2 h-4 w-4 text-slate-400 transition-transform duration-200",
                 isOpen && "rotate-180"
               )}
             />
@@ -142,18 +120,22 @@ export function ModuleSidebarLinks({ module }: ModuleSidebarLinksProps) {
                 transition={{ duration: 0.2, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <div className="ml-4 flex flex-col gap-y-0.5 border-l border-slate-100 pl-3 my-0.5">
+                <div className="my-0.5 ml-4 flex flex-col gap-y-0.5 border-l border-slate-100 pl-3">
                   {link.items?.map((item) => {
                     const isSubActive =
-                      pathname === item.href || pathname.startsWith(`${item.href}/`)
+                      pathname === item.href ||
+                      pathname.startsWith(`${item.href}/`)
                     return (
                       <Link
                         key={item.name}
                         href={item.href}
                         className={clsx(
                           "block rounded-md px-2 py-1.5 text-[12.5px] transition-colors",
-                          { "bg-sky-50 text-sky-700 font-medium": isSubActive },
-                          { "text-slate-500 hover:text-slate-900 hover:bg-slate-50": !isSubActive }
+                          { "bg-sky-50 font-medium text-sky-700": isSubActive },
+                          {
+                            "text-slate-500 hover:bg-slate-50 hover:text-slate-900":
+                              !isSubActive,
+                          }
                         )}
                       >
                         {item.name}
@@ -172,7 +154,8 @@ export function ModuleSidebarLinks({ module }: ModuleSidebarLinksProps) {
     const isActive =
       link.href === `/${module.slug}`
         ? pathname === link.href
-        : pathname === link.href || (link.href && pathname.startsWith(`${link.href}/`))
+        : pathname === link.href ||
+          (link.href && pathname.startsWith(`${link.href}/`))
 
     return (
       <Link
@@ -180,7 +163,7 @@ export function ModuleSidebarLinks({ module }: ModuleSidebarLinksProps) {
         href={link.href || "#"}
         className={clsx(
           "flex items-center gap-x-2 rounded-lg px-2 py-2 text-[13px] transition-colors",
-          { "bg-sky-100 text-sky-800 font-medium": isActive },
+          { "bg-sky-100 font-medium text-sky-800": isActive },
           { "text-slate-600 hover:bg-slate-100": !isActive }
         )}
       >
@@ -195,7 +178,7 @@ export function ModuleSidebarLinks({ module }: ModuleSidebarLinksProps) {
       <div className="space-y-1">{module.sidebarLinks.map(renderLink)}</div>
 
       {module.sidebarBottomLinks && module.sidebarBottomLinks.length > 0 && (
-        <div className="space-y-1 mt-4 pt-4 border-t border-slate-100">
+        <div className="mt-4 space-y-1 border-t border-slate-100 pt-4">
           {module.sidebarBottomLinks.map(renderLink)}
         </div>
       )}

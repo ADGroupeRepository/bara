@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { modules } from "@/lib/modules"
-import { ModuleIcons } from "@/components/layout/module-nav/module-icons"
+import { ModuleIcons } from "@/components/layout/sidebar/icons"
 import { Button } from "@/components/ui/button"
 import { Hexagon, ArrowRight } from "lucide-react"
 import { GridPattern } from "@/components/ui/grid-pattern"

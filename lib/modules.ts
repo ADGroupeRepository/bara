@@ -91,7 +91,7 @@ export const modules: ModuleConfig[] = [
       },
       {
         name: "Présences",
-        icon: "Check",
+        icon: "Clock",
         items: [
           { name: "Présences", href: "/rh/attendance" },
           { name: "Outil de présence", href: "/rh/attendance-tool" },
@@ -99,12 +99,15 @@ export const modules: ModuleConfig[] = [
           { name: "Importer présences", href: "/rh/upload-attendance" },
           { name: "Pointage collaborateur", href: "/rh/employee-checkin" },
           { name: "Présence automatique", href: "/rh/auto-attendance" },
-          { name: "Intégration Biométrique", href: "/rh/biometric-integration" },
+          {
+            name: "Intégration Biométrique",
+            href: "/rh/biometric-integration",
+          },
         ],
       },
       {
         name: "Plannings",
-        icon: "Clock",
+        icon: "Calendar",
         items: [
           { name: "Gestion des horaires", href: "/rh/shift-management" },
           { name: "Types d'horaires", href: "/rh/shift-type" },
@@ -112,26 +115,38 @@ export const modules: ModuleConfig[] = [
           { name: "Demandes d'horaires", href: "/rh/shift-request" },
           { name: "Assignations", href: "/rh/shift-assignment" },
           { name: "Emplois du temps", href: "/rh/shift-schedule" },
-          { name: "Attributions d'emploi", href: "/rh/shift-schedule-assignment" },
+          {
+            name: "Attributions d'emploi",
+            href: "/rh/shift-schedule-assignment",
+          },
           { name: "Outil d'attribution", href: "/rh/shift-assignment-tool" },
           { name: "Roster", href: "/rh/roster" },
         ],
       },
       {
         name: "Gestion des Congés",
-        icon: "Calendar",
+        icon: "CalendarRemove",
         items: [
           { name: "Congés", href: "/rh/leaves" },
           { name: "Ajustements", href: "/rh/leave-adjustment" },
           { name: "Jours fériés", href: "/rh/holiday-list" },
-          { name: "Assignation jours fériés", href: "/rh/holiday-list-assignment" },
+          {
+            name: "Assignation jours fériés",
+            href: "/rh/holiday-list-assignment",
+          },
           { name: "Types de congés", href: "/rh/leave-type" },
           { name: "Périodes", href: "/rh/leave-period" },
           { name: "Politiques", href: "/rh/leave-policy" },
-          { name: "Assignation politiques", href: "/rh/leave-policy-assignment" },
+          {
+            name: "Assignation politiques",
+            href: "/rh/leave-policy-assignment",
+          },
           { name: "Panneau de contrôle", href: "/rh/leave-control-panel" },
           { name: "Demandes de congés", href: "/rh/leave-application" },
-          { name: "Congés compensatoires", href: "/rh/compensatory-leave-request" },
+          {
+            name: "Congés compensatoires",
+            href: "/rh/compensatory-leave-request",
+          },
           { name: "Monétisation", href: "/rh/leave-encashment" },
           { name: "Périodes bloquées", href: "/rh/leave-block-list" },
           { name: "Allocations", href: "/rh/leave-allocation" },
@@ -142,7 +157,7 @@ export const modules: ModuleConfig[] = [
       },
       {
         name: "Paie",
-        icon: "Payroll",
+        icon: "Dollar",
         items: [
           { name: "Paramètres de paie", href: "/rh/payroll/setup" },
           { name: "Gestion de la paie", href: "/rh/payroll/management" },
@@ -161,46 +176,51 @@ export const modules: ModuleConfig[] = [
       },
       {
         name: "Performances",
-        icon: "Performance",
+        icon: "Chart",
         items: [
-          { name: "Modèles d'évaluation", href: "/rh/performance/appraisal-template" },
-          { name: "Cycles d'évaluation", href: "/rh/performance/appraisal-cycle" },
+          {
+            name: "Modèles d'évaluation",
+            href: "/rh/performance/appraisal-template",
+          },
+          {
+            name: "Cycles d'évaluation",
+            href: "/rh/performance/appraisal-cycle",
+          },
           { name: "Évaluations", href: "/rh/performance/appraisals" },
           { name: "Feedback collaborateur", href: "/rh/performance/feedback" },
           { name: "Objectifs", href: "/rh/performance/goals" },
           { name: "Rapport d'ensemble", href: "/rh/performance/overview" },
         ],
       },
-      {
-        name: "Formations",
-        icon: "Training",
-        items: [
-          { name: "Programmes", href: "/rh/training/programs" },
-          { name: "Événements", href: "/rh/training/events" },
-          { name: "Résultats", href: "/rh/training/results" },
-          { name: "Feedback", href: "/rh/training/feedback" },
-        ],
-      },
       { name: "Documents", href: "/rh/documents", icon: "Documents" },
       {
         name: "Recrutement",
-        icon: "UserPlus",
+        icon: "UserSearch",
         items: [
           { name: "Plan d'effectifs", href: "/rh/recruitment/staffing-plan" },
           { name: "Demande de poste", href: "/rh/recruitment/requisition" },
           { name: "Offre d'emploi", href: "/rh/recruitment/opening" },
           { name: "Portail d'emploi", href: "/rh/recruitment/portal" },
           { name: "Candidats", href: "/rh/recruitment/applicants" },
-          { name: "Gestion des entretiens", href: "/rh/recruitment/interviews" },
-          { name: "Types d'entretien", href: "/rh/recruitment/interview-types" },
+          {
+            name: "Gestion des entretiens",
+            href: "/rh/recruitment/interviews",
+          },
+          {
+            name: "Types d'entretien",
+            href: "/rh/recruitment/interview-types",
+          },
           { name: "Tableaux d'offre", href: "/rh/recruitment/job-offer" },
-          { name: "Lettres de nomination", href: "/rh/recruitment/appointment-letter" },
+          {
+            name: "Lettres de nomination",
+            href: "/rh/recruitment/appointment-letter",
+          },
           { name: "Cooptation", href: "/rh/recruitment/referral" },
         ],
       },
       {
         name: "Cycle de vie",
-        icon: "UserPlus",
+        icon: "Refresh",
         items: [
           { name: "Gestion du cycle de vie", href: "/rh/lifecycle" },
           { name: "Onboarding", href: "/rh/lifecycle/onboarding" },
@@ -209,12 +229,15 @@ export const modules: ModuleConfig[] = [
           { name: "Transferts", href: "/rh/lifecycle/transfer" },
           { name: "Compétences (Skill Map)", href: "/rh/lifecycle/skills" },
           { name: "Entretien de départ", href: "/rh/lifecycle/exit-interview" },
-          { name: "Solde de tout compte", href: "/rh/lifecycle/final-statement" },
+          {
+            name: "Solde de tout compte",
+            href: "/rh/lifecycle/final-statement",
+          },
         ],
       },
       {
         name: "Frais & Déplacements",
-        icon: "Expenses",
+        icon: "Receipt",
         items: [
           { name: "Avances sur salaire", href: "/rh/expenses/advance" },
           { name: "Notes de frais", href: "/rh/expenses/claims" },
@@ -236,9 +259,17 @@ export const modules: ModuleConfig[] = [
     sidebarLinks: [
       { name: "Accueil", href: "/referentiel", icon: "Home" },
       { name: "Contacts", href: "/referentiel/contacts", icon: "People" },
-      { name: "Organisations", href: "/referentiel/organizations", icon: "Building" },
+      {
+        name: "Organisations",
+        href: "/referentiel/organizations",
+        icon: "Building",
+      },
       { name: "Catégories", href: "/referentiel/categories", icon: "Tag" },
-      { name: "Import / Export", href: "/referentiel/import-export", icon: "Transfer" },
+      {
+        name: "Import / Export",
+        href: "/referentiel/import-export",
+        icon: "Transfer",
+      },
     ],
     sidebarBottomLinks: [
       { name: "Paramètres", href: "/referentiel/settings", icon: "Settings" },
@@ -258,7 +289,11 @@ export const modules: ModuleConfig[] = [
       { name: "Accueil", href: "/achats", icon: "Home" },
       { name: "Commandes", href: "/achats/orders", icon: "Cart" },
       { name: "Fournisseurs", href: "/achats/suppliers", icon: "Building" },
-      { name: "Bons de commande", href: "/achats/purchase-orders", icon: "FileText" },
+      {
+        name: "Bons de commande",
+        href: "/achats/purchase-orders",
+        icon: "FileText",
+      },
       { name: "Factures", href: "/achats/invoices", icon: "Receipt" },
       { name: "Budget", href: "/achats/budget", icon: "Wallet" },
     ],
@@ -338,7 +373,9 @@ export function getModuleBySlug(slug: string): ModuleConfig | undefined {
   return modules.find((m) => m.slug === slug)
 }
 
-export function getModuleFromPathname(pathname: string): ModuleConfig | undefined {
+export function getModuleFromPathname(
+  pathname: string
+): ModuleConfig | undefined {
   // Extract the first segment after /
   const segments = pathname.split("/").filter(Boolean)
   if (segments.length === 0) return modules[0] // default to Courrier

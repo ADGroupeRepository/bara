@@ -1,19 +1,10 @@
 "use client"
 
-import {
-  User,
-  Briefcase,
-  FileText,
-  Phone,
-  StickyNote,
-} from "lucide-react"
+import { useRef } from "react"
+import { User, Briefcase, FileText, Phone, StickyNote, Clock } from "lucide-react"
 
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 
 import type { EmployeeProfile as EmployeeProfileType } from "./mock-data"
 import { ProfileHeader } from "./profile-header"
@@ -22,53 +13,74 @@ import { TabContract } from "./tabs/tab-contract"
 import { TabDocuments } from "./tabs/tab-documents"
 import { TabEmergency } from "./tabs/tab-emergency"
 import { TabNotes } from "./tabs/tab-notes"
+import { TabSchedule } from "./tabs/tab-schedule"
 
 type EmployeeProfileProps = {
   readonly employee: EmployeeProfileType
 }
 
 export function EmployeeProfile({ employee }: EmployeeProfileProps) {
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
   return (
-    <div className="flex-1 space-y-6 px-6 pt-6 pb-8">
+    <div className="flex-1 pb-8">
       <ProfileHeader employee={employee} />
 
-      <Tabs defaultValue="overview">
-        <TabsList variant="line">
-          <TabsTrigger value="overview">
-            <User className="h-4 w-4" />
-            Résumé
-          </TabsTrigger>
-          <TabsTrigger value="contract">
-            <Briefcase className="h-4 w-4" />
-            Contrat & Salaire
-          </TabsTrigger>
-          <TabsTrigger value="documents">
-            <FileText className="h-4 w-4" />
-            Dossier & Formation
-          </TabsTrigger>
-          <TabsTrigger value="emergency">
-            <Phone className="h-4 w-4" />
-            Contacts d&apos;urgence
-          </TabsTrigger>
-          <TabsTrigger value="notes">
-            <StickyNote className="h-4 w-4" />
-            Notes & Santé
-          </TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="overview" className="relative pt-4">
+        <div
+          ref={sentinelRef}
+          className="pointer-events-none absolute top-4 right-0 left-0 h-px w-full"
+        />
+        <div
+          className={cn(
+            "sticky top-[80px] z-10 mb-4 bg-white px-6 transition-colors duration-200"
+          )}
+        >
+          <TabsList variant={"line"}>
+            <TabsTrigger value="overview">
+              <User className="h-4 w-4" />
+              Résumé
+            </TabsTrigger>
+            <TabsTrigger value="contract">
+              <Briefcase className="h-4 w-4" />
+              Contrat & Salaire
+            </TabsTrigger>
+            <TabsTrigger value="documents">
+              <FileText className="h-4 w-4" />
+              Dossier & Formation
+            </TabsTrigger>
+            <TabsTrigger value="schedule">
+              <Clock className="h-4 w-4" />
+              Emploi du temps
+            </TabsTrigger>
+            <TabsTrigger value="emergency">
+              <Phone className="h-4 w-4" />
+              Coordonnées
+            </TabsTrigger>
+            <TabsTrigger value="notes">
+              <StickyNote className="h-4 w-4" />
+              Détails Personnels
+            </TabsTrigger>
+          </TabsList>
+          <hr />
+        </div>
 
-        <TabsContent value="overview" className="mt-6">
+        <TabsContent value="overview" className="px-6">
           <TabOverview employee={employee} />
         </TabsContent>
-        <TabsContent value="contract" className="mt-6">
+        <TabsContent value="contract" className="px-6">
           <TabContract employee={employee} />
         </TabsContent>
-        <TabsContent value="documents" className="mt-6">
+        <TabsContent value="documents" className="px-6">
           <TabDocuments employee={employee} />
         </TabsContent>
-        <TabsContent value="emergency" className="mt-6">
+        <TabsContent value="schedule" className="px-6">
+          <TabSchedule employee={employee} />
+        </TabsContent>
+        <TabsContent value="emergency" className="px-6">
           <TabEmergency employee={employee} />
         </TabsContent>
-        <TabsContent value="notes" className="mt-6">
+        <TabsContent value="notes" className="px-6">
           <TabNotes employee={employee} />
         </TabsContent>
       </Tabs>
