@@ -53,7 +53,7 @@ export function StepDocuments({
   return (
     <div className="space-y-8">
       {/* ── Pièces d'identité ─────────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Pièces d&apos;identité</CardTitle>
           <CardDescription>
@@ -93,7 +93,7 @@ export function StepDocuments({
       </Card>
 
       {/* ── Documents à joindre ───────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Documents à joindre</CardTitle>
           <CardDescription>
@@ -115,7 +115,7 @@ export function StepDocuments({
       </Card>
 
       {/* ── Parcours Académique ───────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Parcours Académique</CardTitle>
           <CardDescription>
@@ -137,9 +137,7 @@ export function StepDocuments({
                 <SelectItem value="Bac+2">Bac+2 (BTS/DUT)</SelectItem>
                 <SelectItem value="Bac+3">Bac+3 (Licence)</SelectItem>
                 <SelectItem value="Bac+4">Bac+4 (Maîtrise)</SelectItem>
-                <SelectItem value="Bac+5">
-                  Bac+5 (Master/Ingénieur)
-                </SelectItem>
+                <SelectItem value="Bac+5">Bac+5 (Master/Ingénieur)</SelectItem>
                 <SelectItem value="Doctorat">Doctorat</SelectItem>
                 <SelectItem value="Autre">Autre</SelectItem>
               </SelectContent>
@@ -176,7 +174,7 @@ export function StepDocuments({
       </Card>
 
       {/* ── Compétences & Langues ─────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Compétences & Langues</CardTitle>
           <CardDescription>

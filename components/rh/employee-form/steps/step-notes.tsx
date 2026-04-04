@@ -32,7 +32,7 @@ export function StepNotes({
   return (
     <div className="space-y-8">
       {/* ── Notes Internes ────────────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Notes Internes</CardTitle>
           <CardDescription>
@@ -49,7 +49,7 @@ export function StepNotes({
       </Card>
 
       {/* ── Santé & Aptitude ──────────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Santé & Aptitude</CardTitle>
           <CardDescription>
@@ -61,9 +61,7 @@ export function StepNotes({
             <FieldLabel>Aptitude médicale</FieldLabel>
             <Select
               value={watch("aptitudeMedicale")}
-              onValueChange={(v) =>
-                handleSelectChange("aptitudeMedicale", v)
-              }
+              onValueChange={(v) => handleSelectChange("aptitudeMedicale", v)}
             >
               <SelectTrigger className="w-full max-w-xs">
                 <SelectValue placeholder="Sélectionner" />

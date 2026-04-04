@@ -221,7 +221,13 @@ const attendanceRecords: AttendanceRecord[] = [
 
 const ITEMS_PER_PAGE = 8
 const ALL_STATUSES = ["Présent", "Retard", "Absent", "Télétravail"]
-const DEPARTMENTS = ["Direction", "Informatique", "RH", "Finance", "Communication"]
+const DEPARTMENTS = [
+  "Direction",
+  "Informatique",
+  "RH",
+  "Finance",
+  "Communication",
+]
 
 export function AttendanceList() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -266,7 +272,7 @@ export function AttendanceList() {
     result.sort((a, b) => {
       const valA = a[sortKey] ?? ""
       const valB = b[sortKey] ?? ""
-      
+
       if (valA < valB) return sortDirection === "asc" ? -1 : 1
       if (valA > valB) return sortDirection === "asc" ? 1 : -1
       return 0
@@ -286,15 +292,30 @@ export function AttendanceList() {
       label: "Taux de présence",
       value: "92.5%",
       segments: [
-        { id: "online", label: "Présent", value: 92.5, colorClass: "bg-primary" },
-        { id: "offline", label: "Absent", value: 7.5, colorClass: "bg-primary/20" },
+        {
+          id: "online",
+          label: "Présent",
+          value: 92.5,
+          colorClass: "bg-primary",
+        },
+        {
+          id: "offline",
+          label: "Absent",
+          value: 7.5,
+          colorClass: "bg-primary/20",
+        },
       ],
     },
     {
       label: "Retards cumulés",
       value: "14",
       segments: [
-        { id: "warn", label: "Critique", value: 4, colorClass: "bg-destructive/60" },
+        {
+          id: "warn",
+          label: "Critique",
+          value: 4,
+          colorClass: "bg-destructive/60",
+        },
         { id: "minor", label: "Mineur", value: 10, colorClass: "bg-amber-400" },
       ],
     },
@@ -302,8 +323,18 @@ export function AttendanceList() {
       label: "Télétravail",
       value: "18%",
       segments: [
-        { id: "remote", label: "Maison", value: 18, colorClass: "bg-indigo-500" },
-        { id: "office", label: "Bureau", value: 82, colorClass: "bg-primary/20" },
+        {
+          id: "remote",
+          label: "Maison",
+          value: 18,
+          colorClass: "bg-indigo-500",
+        },
+        {
+          id: "office",
+          label: "Bureau",
+          value: 82,
+          colorClass: "bg-primary/20",
+        },
       ],
     },
   ]
@@ -338,7 +369,11 @@ export function AttendanceList() {
         </div>
         <div className="flex items-center gap-2">
           {hasActiveFilters && (
-            <Button variant="ghost" onClick={clearFilters} className="h-11 text-muted-foreground">
+            <Button
+              variant="ghost"
+              onClick={clearFilters}
+              className="h-11 text-muted-foreground"
+            >
               <X className="mr-2 h-4 w-4" />
               Réinitialiser
             </Button>
@@ -355,7 +390,10 @@ export function AttendanceList() {
               <DropdownMenuLabel>Filtrer par département</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {DEPARTMENTS.map((dept) => (
-                <DropdownMenuItem key={dept} onClick={() => setFilterDept(dept)}>
+                <DropdownMenuItem
+                  key={dept}
+                  onClick={() => setFilterDept(dept)}
+                >
                   {dept}
                 </DropdownMenuItem>
               ))}
@@ -373,14 +411,17 @@ export function AttendanceList() {
               <DropdownMenuLabel>Filtrer par statut</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {ALL_STATUSES.map((status) => (
-                <DropdownMenuItem key={status} onClick={() => setFilterStatus(status)}>
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => setFilterStatus(status)}
+                >
                   {status}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button className="h-11 px-4 gap-2">
+          <Button className="h-11 gap-2 px-4">
             <Plus className="h-4 w-4" />
             Pointer Manuel
           </Button>
@@ -391,19 +432,37 @@ export function AttendanceList() {
       <ScrollArea className="h-[calc(100vh-415px)] overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent text-foreground">
+            <TableRow className="text-foreground hover:bg-transparent">
               <TableHead className="w-[280px] font-semibold">
-                <SortableHeader label="Collaborateur" sortKeyName="employeeName" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+                <SortableHeader
+                  label="Collaborateur"
+                  sortKeyName="employeeName"
+                  sortKey={sortKey}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                />
               </TableHead>
               <TableHead className="font-semibold">Service</TableHead>
-              <TableHead className="font-semibold text-center">Arrivée</TableHead>
-              <TableHead className="font-semibold text-center">Départ</TableHead>
-              <TableHead className="font-semibold text-center">Durée</TableHead>
-              <TableHead className="font-semibold text-center">
-                <SortableHeader label="Statut" sortKeyName="status" sortKey={sortKey} sortDirection={sortDirection} onSort={handleSort} />
+              <TableHead className="text-center font-semibold">
+                Arrivée
+              </TableHead>
+              <TableHead className="text-center font-semibold">
+                Départ
+              </TableHead>
+              <TableHead className="text-center font-semibold">Durée</TableHead>
+              <TableHead className="text-center font-semibold">
+                <SortableHeader
+                  label="Statut"
+                  sortKeyName="status"
+                  sortKey={sortKey}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                />
               </TableHead>
               <TableHead className="font-semibold">Localisation</TableHead>
-              <TableHead className="text-right font-semibold">Actions</TableHead>
+              <TableHead className="text-right font-semibold">
+                Actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -412,55 +471,100 @@ export function AttendanceList() {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9 border border-border">
-                      <AvatarImage src={record.employeeAvatar} alt={record.employeeName} />
+                      <AvatarImage
+                        src={record.employeeAvatar}
+                        alt={record.employeeName}
+                      />
                       <AvatarFallback className="bg-muted text-xs font-medium text-muted-foreground">
-                        {record.employeeName.split(" ").map((n) => n[0]).join("")}
+                        {record.employeeName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-foreground">{record.employeeName}</span>
-                      <span className="text-xs text-muted-foreground">{record.id}</span>
+                      <span className="text-sm font-medium text-foreground">
+                        {record.employeeName}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {record.id}
+                      </span>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className="text-sm text-muted-foreground">{record.department}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {record.department}
+                  </span>
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex flex-col items-center">
-                    <span className={cn("text-sm font-medium", record.status === "Retard" ? "text-amber-600" : "text-foreground")}>
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        record.status === "Retard"
+                          ? "text-amber-600"
+                          : "text-foreground"
+                      )}
+                    >
                       {record.checkIn ?? "--:--"}
                     </span>
-                    {record.status === "Retard" && <span className="text-[10px] text-amber-500 font-medium">+15min</span>}
+                    {record.status === "Retard" && (
+                      <span className="text-[10px] font-medium text-amber-500">
+                        +15min
+                      </span>
+                    )}
                   </div>
                 </TableCell>
                 <TableCell className="text-center">
-                  <span className="text-sm text-foreground">{record.checkOut ?? "--:--"}</span>
+                  <span className="text-sm text-foreground">
+                    {record.checkOut ?? "--:--"}
+                  </span>
                 </TableCell>
                 <TableCell className="text-center">
-                  <span className="text-sm font-medium text-muted-foreground">{record.duration ?? "-"}</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {record.duration ?? "-"}
+                  </span>
                 </TableCell>
                 <TableCell className="text-center">
                   <div className="flex items-center justify-center gap-1.5">
-                    {record.status === "Présent" && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />}
-                    {record.status === "Retard" && <AlertCircle className="h-3.5 w-3.5 text-amber-500" />}
-                    {record.status === "Absent" && <XCircle className="h-3.5 w-3.5 text-destructive" />}
-                    {record.status === "Télétravail" && <Laptop className="h-3.5 w-3.5 text-indigo-500" />}
-                    <span className={cn(
-                      "text-xs font-medium",
-                      record.status === "Présent" && "text-emerald-700",
-                      record.status === "Retard" && "text-amber-700",
-                      record.status === "Absent" && "text-destructive",
-                      record.status === "Télétravail" && "text-indigo-700"
-                    )}>
+                    {record.status === "Présent" && (
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    )}
+                    {record.status === "Retard" && (
+                      <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                    )}
+                    {record.status === "Absent" && (
+                      <XCircle className="h-3.5 w-3.5 text-destructive" />
+                    )}
+                    {record.status === "Télétravail" && (
+                      <Laptop className="h-3.5 w-3.5 text-indigo-500" />
+                    )}
+                    <span
+                      className={cn(
+                        "text-xs font-medium",
+                        record.status === "Présent" && "text-emerald-700",
+                        record.status === "Retard" && "text-amber-700",
+                        record.status === "Absent" && "text-destructive",
+                        record.status === "Télétravail" && "text-indigo-700"
+                      )}
+                    >
                       {record.status}
                     </span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1.5 text-muted-foreground">
-                    {record.location === "Bureau" ? <Building2 className="h-3.5 w-3.5" /> : record.location === "Maison" ? <Laptop className="h-3.5 w-3.5" /> : <MapPin className="h-3.5 w-3.5 opacity-30" />}
-                    <span className="text-xs">{record.location ?? "Non défini"}</span>
+                    {record.location === "Bureau" ? (
+                      <Building2 className="h-3.5 w-3.5" />
+                    ) : record.location === "Maison" ? (
+                      <Laptop className="h-3.5 w-3.5" />
+                    ) : (
+                      <MapPin className="h-3.5 w-3.5 opacity-30" />
+                    )}
+                    <span className="text-xs">
+                      {record.location ?? "Non défini"}
+                    </span>
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
@@ -476,10 +580,16 @@ export function AttendanceList() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-[180px]">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Voir l'historique</DropdownMenuItem>
-                        <DropdownMenuItem>Justifier retard/absence</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Voir l&apos;historique
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          Justifier retard/absence
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive font-medium">Signaler anomalie</DropdownMenuItem>
+                        <DropdownMenuItem className="font-medium text-destructive">
+                          Signaler anomalie
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -493,16 +603,28 @@ export function AttendanceList() {
       {/* Pagination & Info */}
       <div className="flex items-center justify-between pt-5 text-sm text-muted-foreground">
         <span>
-          Affichage de {(currentPage - 1) * ITEMS_PER_PAGE + 1} à {Math.min(currentPage * ITEMS_PER_PAGE, processedRecords.length)} sur {processedRecords.length} enregistrements
+          Affichage de {(currentPage - 1) * ITEMS_PER_PAGE + 1} à{" "}
+          {Math.min(currentPage * ITEMS_PER_PAGE, processedRecords.length)} sur{" "}
+          {processedRecords.length} enregistrements
         </span>
         <div className="flex items-center gap-1">
-          <Button variant="outline" size="icon-sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <Button variant="outline" size="icon-sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}>
+          <Button
+            variant="outline"
+            size="icon-sm"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button variant="outline" className="h-8 ml-2 gap-2">
+          <Button variant="outline" className="ml-2 h-8 gap-2">
             <Download className="h-3.5 w-3.5" />
             Exporter
           </Button>

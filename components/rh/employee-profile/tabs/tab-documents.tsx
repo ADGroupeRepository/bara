@@ -3,11 +3,13 @@
 import {
   FileText,
   Download,
-  Shield,
   GraduationCap,
   Award,
   Languages,
   Sparkles,
+  Briefcase,
+  Eye,
+  X,
 } from "lucide-react"
 
 import {
@@ -19,7 +21,22 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 import type { EmployeeProfile } from "../mock-data"
 
@@ -30,83 +47,10 @@ type TabDocumentsProps = {
 export function TabDocuments({ employee }: TabDocumentsProps) {
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Pièces d'identité */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Pièces d&apos;identité</CardTitle>
-            <CardDescription>
-              Numéros d&apos;identification officiels
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                <Shield className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="text-xs text-muted-foreground">N° CNI / Passeport</p>
-                <p className="font-mono text-sm font-medium">
-                  {employee.numeroCni}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Expire le {employee.dateExpirationCni}
-                </p>
-              </div>
-            </div>
-            <Separator />
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-xs text-muted-foreground">N° Sécurité sociale</p>
-                <p className="font-mono text-sm font-medium">
-                  {employee.numeroSecuriteSociale}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Numéro fiscal (IFU)</p>
-                <p className="font-mono text-sm font-medium">
-                  {employee.numeroFiscal}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Parcours Académique */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Parcours Académique</CardTitle>
-            <CardDescription>
-              Niveau d&apos;études et diplômes obtenus
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                <GraduationCap className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">{employee.diplome}</p>
-                <p className="text-xs text-muted-foreground">
-                  {employee.etablissement} — {employee.anneeObtention}
-                </p>
-              </div>
-            </div>
-            <Separator />
-            <div>
-              <p className="text-xs text-muted-foreground">Niveau d&apos;études</p>
-              <Badge variant="outline" className="mt-1">
-                {employee.niveauEtudes}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Documents joints */}
+      {/* Documents administratifs */}
       <Card>
         <CardHeader>
-          <CardTitle>Documents joints</CardTitle>
+          <CardTitle>Documents administratifs</CardTitle>
           <CardDescription>
             Fichiers téléchargés dans le dossier du collaborateur
           </CardDescription>
@@ -117,14 +61,16 @@ export function TabDocuments({ employee }: TabDocumentsProps) {
               Aucun document téléchargé.
             </p>
           ) : (
-            <div className="grid gap-3 md:grid-cols-3">
-              {employee.documents.map((doc) => (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {employee.documents
+                .filter((doc) => doc.id !== "id-doc")
+                .map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center gap-3 rounded-lg border p-4"
+                  className="flex items-center gap-3 rounded-lg border p-3"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <FileText className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{doc.label}</p>
@@ -132,9 +78,49 @@ export function TabDocuments({ employee }: TabDocumentsProps) {
                       {doc.fileSize} · {doc.uploadedAt}
                     </p>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                    <Download className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Drawer>
+                      <DrawerTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 shrink-0"
+                          title="Consulter"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </DrawerTrigger>
+                      <DrawerContent className="h-full" hideHandle>
+                        <div className="flex h-full w-full flex-col">
+                          <DrawerHeader className="flex flex-row items-center justify-between mt-2">
+                            <DrawerTitle className="text-xl font-semibold">
+                              {doc.label}
+                            </DrawerTitle>
+                            <DrawerClose asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </DrawerClose>
+                          </DrawerHeader>
+                          <div className="flex-1 overflow-hidden px-4 pb-4">
+                            <iframe
+                              src="/Courrier.pdf"
+                              className="h-full w-full rounded-md border"
+                              title={`Document: ${doc.label}`}
+                            />
+                          </div>
+                        </div>
+                      </DrawerContent>
+                    </Drawer>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 shrink-0"
+                      title="Télécharger"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -142,68 +128,265 @@ export function TabDocuments({ employee }: TabDocumentsProps) {
         </CardContent>
       </Card>
 
+      {/* Parcours Académique Data Table */}
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4 sm:items-center">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5" />
+              Parcours Académique
+            </CardTitle>
+            <CardDescription>
+              Historique des formations et diplômes obtenus
+            </CardDescription>
+          </div>
+          <Badge variant="outline" className="hidden shrink-0 sm:inline-flex">
+            Niveau actuel : {employee.niveauEtudes}
+          </Badge>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-hidden rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50 hover:bg-muted/50">
+                  <TableHead className="w-[30%]">Diplôme / Formation</TableHead>
+                  <TableHead className="w-[25%]">Établissement</TableHead>
+                  <TableHead className="w-[20%]">Période</TableHead>
+                  <TableHead className="w-[15%]">Statut</TableHead>
+                  <TableHead className="w-[10%]">Documents</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {employee.parcoursAcademique?.length > 0 ? (
+                  employee.parcoursAcademique.map((parcours) => (
+                    <TableRow key={parcours.id}>
+                      <TableCell>
+                        <div className="text-sm font-medium">
+                          {parcours.diplome}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {parcours.domaine}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {parcours.etablissement}
+                      </TableCell>
+                      <TableCell className="text-sm whitespace-nowrap">
+                        {parcours.dateDebut} - {parcours.dateFin}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            parcours.statut === "Obtenu"
+                              ? "secondary"
+                              : "outline"
+                          }
+                          className="font-normal"
+                        >
+                          {parcours.statut}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {parcours.documentUrl && (
+                          <div className="flex items-center gap-1">
+                            <Drawer>
+                              <DrawerTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  title="Voir le diplôme"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </DrawerTrigger>
+                              <DrawerContent className="h-full" hideHandle>
+                                <div className="flex h-full w-full flex-col">
+                                  <DrawerHeader className="mt-2 flex flex-row items-center justify-between">
+                                    <DrawerTitle className="text-xl font-semibold">
+                                      Diplôme : {parcours.diplome}
+                                    </DrawerTitle>
+                                    <DrawerClose asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </DrawerClose>
+                                  </DrawerHeader>
+                                  <div className="flex-1 overflow-hidden px-4 pb-4">
+                                    <iframe
+                                      src={parcours.documentUrl}
+                                      className="h-full w-full rounded-md border"
+                                      title={`Diplôme: ${parcours.diplome}`}
+                                    />
+                                  </div>
+                                </div>
+                              </DrawerContent>
+                            </Drawer>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              title="Télécharger le diplôme"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      Aucun parcours académique enregistré.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Expériences Professionnelles Data Table */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2">
+            <Briefcase className="h-5 w-5" />
+            Expériences Professionnelles
+          </CardTitle>
+          <CardDescription>
+            Historique du parcours professionnel
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-hidden rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50 hover:bg-muted/50">
+                  <TableHead className="w-[25%]">Poste / Rôle</TableHead>
+                  <TableHead className="w-[25%]">Employeur</TableHead>
+                  <TableHead className="w-[20%]">Période</TableHead>
+                  <TableHead className="w-[30%]">Aperçu des missions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {employee.experiencesProfessionnelles?.length > 0 ? (
+                  employee.experiencesProfessionnelles.map((exp) => (
+                    <TableRow key={exp.id}>
+                      <TableCell className="align-top">
+                        <div className="text-sm font-medium">{exp.poste}</div>
+                      </TableCell>
+                      <TableCell className="align-top">
+                        <div className="text-sm">{exp.employeur}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {exp.lieu}
+                        </div>
+                      </TableCell>
+                      <TableCell className="align-top text-sm whitespace-nowrap">
+                        {exp.dateDebut} - {exp.dateFin}
+                      </TableCell>
+                      <TableCell className="line-clamp-3 align-top text-sm text-muted-foreground">
+                        {exp.description}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      Aucune expérience professionnelle enregistrée.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Compétences & Langues */}
       <Card>
         <CardHeader>
-          <CardTitle>Compétences & Langues</CardTitle>
+          <CardTitle>Aptitudes & Certifications</CardTitle>
           <CardDescription>
-            Compétences clés, langues parlées et certifications
+            Compétences clés, langues parlées et certifications professionnelles
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5">
-          {employee.competences.length > 0 && (
+        <CardContent>
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Compétences */}
             <div>
-              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Sparkles className="h-4 w-4" />
                 Compétences
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {employee.competences.map((c) => (
-                  <Badge key={c} variant="secondary">
-                    {c}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {employee.langues.length > 0 && (
-            <>
-              <Separator />
-              <div>
-                <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <Languages className="h-3.5 w-3.5" />
-                  Langues
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {employee.langues.map((l) => (
-                    <Badge key={l} variant="outline">
-                      {l}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          {employee.certifications.length > 0 && (
-            <>
-              <Separator />
-              <div>
-                <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <Award className="h-3.5 w-3.5" />
-                  Certifications
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {employee.certifications.map((c) => (
+              <div className="flex flex-wrap gap-2">
+                {employee.competences.length > 0 ? (
+                  employee.competences.map((c) => (
                     <Badge key={c} variant="secondary">
                       {c}
                     </Badge>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    Non renseigné
+                  </span>
+                )}
               </div>
-            </>
-          )}
+            </div>
+
+            {/* Langues */}
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Languages className="h-4 w-4" />
+                Langues parlées
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {employee.langues.length > 0 ? (
+                  employee.langues.map((l) => (
+                    <Badge key={l} variant="outline" className="bg-muted/50">
+                      {l}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    Non renseigné
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Certifications */}
+            <div>
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Award className="h-4 w-4" />
+                Certifications
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {employee.certifications.length > 0 ? (
+                  employee.certifications.map((c) => (
+                    <Badge key={c} variant="secondary">
+                      {c}
+                    </Badge>
+                  ))
+                ) : (
+                  <span className="text-sm text-muted-foreground">
+                    Non renseigné
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

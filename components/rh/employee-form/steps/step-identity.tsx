@@ -48,7 +48,7 @@ export function StepIdentity({
   return (
     <div className="space-y-8">
       {/* ── Informations Personnelles ──────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Informations Personnelles</CardTitle>
           <CardDescription>
@@ -186,7 +186,7 @@ export function StepIdentity({
       </Card>
 
       {/* ── Adresse & Contact ─────────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader>
           <CardTitle>Adresse & Contact</CardTitle>
           <CardDescription>
@@ -209,18 +209,12 @@ export function StepIdentity({
 
           <Field>
             <FieldLabel>Code postal</FieldLabel>
-            <Input
-              placeholder="Ex: 01 BP 1234"
-              {...register("codePostal")}
-            />
+            <Input placeholder="Ex: 01 BP 1234" {...register("codePostal")} />
           </Field>
 
           <Field>
             <FieldLabel>Pays</FieldLabel>
-            <Input
-              placeholder="Ex: Côte d'Ivoire"
-              {...register("pays")}
-            />
+            <Input placeholder="Ex: Côte d'Ivoire" {...register("pays")} />
           </Field>
 
           <Separator className="md:col-span-2 lg:col-span-3" />
@@ -270,7 +264,7 @@ export function StepIdentity({
       </Card>
 
       {/* ── Contacts d'urgence ────────────────────────────────────────────── */}
-      <Card className="bg-muted ring-0">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <div className="space-y-1">
             <CardTitle>Contacts d&apos;urgence</CardTitle>

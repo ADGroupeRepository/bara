@@ -24,6 +24,36 @@ export type EmployeeDocument = {
   uploadedAt: string
 }
 
+export type ParcoursAcademique = {
+  id: string
+  diplome: string
+  etablissement: string
+  domaine: string
+  dateDebut: string
+  dateFin: string
+  statut: "Obtenu" | "En cours" | "Abandonné"
+  documentUrl?: string
+}
+
+export type ExperienceProfessionnelle = {
+  id: string
+  poste: string
+  employeur: string
+  lieu: string
+  dateDebut: string
+  dateFin: string
+  description: string
+}
+
+export type SalaryRecord = {
+  id: string
+  periode: string
+  montantNet: string
+  datePaiement: string
+  statut: "Payé" | "En attente" | "Annulé"
+  mode: string
+}
+
 export type EmployeeProfile = {
   id: string
   // Identité
@@ -65,6 +95,7 @@ export type EmployeeProfile = {
   indemniteTransport: string
   primeLogement: string
   // Documents
+  typeDocumentIdentite: string
   numeroCni: string
   dateExpirationCni: string
   numeroSecuriteSociale: string
@@ -75,13 +106,19 @@ export type EmployeeProfile = {
   diplome: string
   etablissement: string
   anneeObtention: string
+  parcoursAcademique: ParcoursAcademique[]
+  experiencesProfessionnelles: ExperienceProfessionnelle[]
   competences: string[]
   langues: string[]
   certifications: string[]
+  // Company & Organisation (New)
+  grade: string
+  site: string
   // Notes
   notesInternes: string
   aptitudeMedicale: string
   handicapDeclare: boolean
+  historiqueSalaires: SalaryRecord[]
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -140,24 +177,41 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
     indemniteTransport: "100 000",
     primeLogement: "250 000",
     numeroCni: "CI-1985-0315-ABI-001",
+    typeDocumentIdentite: "CNI (Carte Nationale d'Identité)",
     dateExpirationCni: "15/03/2030",
     numeroSecuriteSociale: "CNPS-1234567890",
     numeroFiscal: "IFU-CI-2020-00456",
     documents: [
       { id: "cv", label: "Curriculum Vitae", fileName: "CV_Sylla_Siaka.pdf", fileSize: "2.1 Mo", uploadedAt: "01/01/2020" },
       { id: "id-doc", label: "Pièce d'identité", fileName: "CNI_Sylla.pdf", fileSize: "1.4 Mo", uploadedAt: "01/01/2020" },
-      { id: "diploma", label: "Diplôme", fileName: "Master_Management_CESAG.pdf", fileSize: "3.2 Mo", uploadedAt: "01/01/2020" },
+      { id: "motivation", label: "Lettre de motivation", fileName: "LM_Sylla_Siaka.pdf", fileSize: "0.8 Mo", uploadedAt: "01/01/2020" },
     ],
     niveauEtudes: "Bac+5",
     diplome: "Master en Management des Organisations",
     etablissement: "CESAG – Dakar",
     anneeObtention: "2010",
+    parcoursAcademique: [
+      { id: "pa-1", diplome: "Master en Management des Organisations", etablissement: "CESAG - Dakar", domaine: "Management", dateDebut: "2008", dateFin: "2010", statut: "Obtenu", documentUrl: "/Courrier.pdf" },
+      { id: "pa-2", diplome: "Licence en Économie", etablissement: "Université FHB", domaine: "Économie", dateDebut: "2005", dateFin: "2008", statut: "Obtenu", documentUrl: "/Courrier.pdf" },
+    ],
+    experiencesProfessionnelles: [
+      { id: "ep-1", poste: "Directeur Général", employeur: "CNF", lieu: "Abidjan, CI", dateDebut: "Jan 2020", dateFin: "Présent", description: "Direction de l'entreprise et gestion stratégique." },
+      { id: "ep-2", poste: "Manager Stratégie", employeur: "KPMG", lieu: "Dakar, Sénégal", dateDebut: "Fév 2015", dateFin: "Déc 2019", description: "Conseil en stratégie pour de grands groupes africains." },
+      { id: "ep-3", poste: "Consultant Junior", employeur: "Deloitte", lieu: "Abidjan, CI", dateDebut: "Août 2010", dateFin: "Jan 2015", description: "Audit et conseil en gestion." },
+    ],
     competences: ["Leadership", "Management stratégique", "Gestion de projet", "Finances publiques"],
     langues: ["Français", "Anglais", "Dioula"],
     certifications: ["PMP (Project Management Professional)", "ITIL v4 Foundation"],
+    grade: "Sénior",
+    site: "Siège Social",
     notesInternes: "Collaborateur exemplaire avec une forte capacité de leadership. A mené avec succès la transformation digitale de l'organisation en 2023. Envisagé pour un programme de formation continue en 2025.",
     aptitudeMedicale: "Apte",
     handicapDeclare: false,
+    historiqueSalaires: [
+      { id: "sal-1", periode: "Mars 2024", montantNet: "2 250 000", datePaiement: "28/03/2024", statut: "Payé", mode: "Virement bancaire" },
+      { id: "sal-2", periode: "Février 2024", montantNet: "2 250 000", datePaiement: "26/02/2024", statut: "Payé", mode: "Virement bancaire" },
+      { id: "sal-3", periode: "Janvier 2024", montantNet: "2 250 000", datePaiement: "29/01/2024", statut: "Payé", mode: "Virement bancaire" },
+    ],
   },
   EMP002: {
     id: "EMP002",
@@ -205,23 +259,40 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
     indemniteTransport: "50 000",
     primeLogement: "100 000",
     numeroCni: "CI-1990-0722-BKE-002",
+    typeDocumentIdentite: "Passeport",
     dateExpirationCni: "22/07/2028",
     numeroSecuriteSociale: "CNPS-0987654321",
     numeroFiscal: "IFU-CI-2021-00789",
     documents: [
       { id: "cv", label: "Curriculum Vitae", fileName: "CV_Dupont_Jean.pdf", fileSize: "1.8 Mo", uploadedAt: "15/03/2021" },
       { id: "id-doc", label: "Pièce d'identité", fileName: "CNI_Dupont.pdf", fileSize: "1.1 Mo", uploadedAt: "15/03/2021" },
+      { id: "motivation", label: "Lettre de motivation", fileName: "LM_Dupont_Jean.pdf", fileSize: "0.9 Mo", uploadedAt: "15/03/2021" },
     ],
     niveauEtudes: "Bac+5",
     diplome: "Master en Informatique",
     etablissement: "INP-HB Yamoussoukro",
     anneeObtention: "2015",
+    parcoursAcademique: [
+      { id: "pa-1", diplome: "Master en Informatique", etablissement: "INP-HB Yamoussoukro", domaine: "Génie Logiciel", dateDebut: "2013", dateFin: "2015", statut: "Obtenu", documentUrl: "/Courrier.pdf" },
+      { id: "pa-2", diplome: "Licence Maths Info", etablissement: "Université de Bouaké", domaine: "Informatique", dateDebut: "2010", dateFin: "2013", statut: "Obtenu", documentUrl: "/Courrier.pdf" },
+    ],
+    experiencesProfessionnelles: [
+      { id: "ep-1", poste: "Responsable IT", employeur: "CNF", lieu: "Abidjan, CI", dateDebut: "Mar 2021", dateFin: "Présent", description: "Gestion de l'infrastructure IT et cloud AWS." },
+      { id: "ep-2", poste: "Ingénieur Système", employeur: "Orange CI", lieu: "Abidjan, CI", dateDebut: "Juin 2016", dateFin: "Fév 2021", description: "Administration des serveurs et réseaux." },
+    ],
     competences: ["Architecture logicielle", "DevOps", "Cloud AWS", "React", "Node.js"],
     langues: ["Français", "Anglais"],
     certifications: ["AWS Solutions Architect", "Scrum Master"],
+    grade: "Manager",
+    site: "Antenne Plateau",
     notesInternes: "Très bon technicien, fiable et autonome. Pilote la migration vers le cloud.",
     aptitudeMedicale: "Apte",
     handicapDeclare: false,
+    historiqueSalaires: [
+      { id: "sal-1", periode: "Mars 2024", montantNet: "1 050 000", datePaiement: "28/03/2024", statut: "Payé", mode: "Virement bancaire" },
+      { id: "sal-2", periode: "Février 2024", montantNet: "1 050 000", datePaiement: "26/02/2024", statut: "Payé", mode: "Virement bancaire" },
+      { id: "sal-3", periode: "Janvier 2024", montantNet: "1 050 000", datePaiement: "29/01/2024", statut: "Payé", mode: "Virement bancaire" },
+    ],
   },
 }
 
