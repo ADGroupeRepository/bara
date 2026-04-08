@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Save, Check, Plus, Trash2, AlertCircle, Clock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -16,9 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { Icons } from "@/components/layout/sidebar/icons"
 import { cn } from "@/lib/utils"
 
 import type { EmployeeProfile } from "../mock-data"
+
 
 type Slot = {
   id: string
@@ -172,13 +175,12 @@ const checkOverlap = (slots: Slot[]) => {
   return false
 }
 
-export function TabSchedule({ employee }: TabScheduleProps) {
+export function TabSchedule({ employee: _employee }: TabScheduleProps) {
   const [schedule, setSchedule] = useState<Record<string, DaySchedule>>(
     structuredClone(SCHEDULE_TEMPLATES[0].schedule)
   )
   const [selectedTemplate, setSelectedTemplate] = useState<string>("standard")
   const [timezone, setTimezone] = useState("Africa/Abidjan")
-  const [isSaved, setIsSaved] = useState(false)
 
   const handleToggle = (day: string) => {
     setSchedule((prev) => {
@@ -274,275 +276,312 @@ export function TabSchedule({ employee }: TabScheduleProps) {
     )
   }, [schedule])
 
-  const handleSave = () => {
-    setIsSaved(true)
-    setTimeout(() => setIsSaved(false), 2000)
-  }
-
   return (
-    <div className="mx-auto max-w-4xl space-y-8 pb-12">
-      {/* En-tête principal */}
-      <div className="flex flex-col justify-between gap-4 border-b border-border/60 pb-6 sm:flex-row sm:items-center">
-        <div>
-          <h2 className="text-xl font-semibold text-foreground">
-            Emploi du temps
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Planifiez les créneaux de travail de {employee.prenom}{" "}
-            {employee.nom}.
-          </p>
-        </div>
+    <div className="flex flex-col gap-8 pb-12">
+      <div className="flex gap-8">
+        {/* Colonne GAUCHE : Détail de la semaine */}
+        <div className="w-[50%] space-y-10">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">
+              Paramétrer le rythme de travail
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Configurez le rythme de travail du collaborateur tel qu&apos;il
+              est indiqué dans le contrat.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-medium text-foreground">
+                Paramètres du planning
+              </h3>
+            </div>
 
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={handleSave}
-            className={cn(
-              "px-4 transition-all",
-              isSaved ? "bg-green-600 text-white hover:bg-green-700" : ""
-            )}
-          >
-            {isSaved ? (
-              <>
-                <Check className="h-4 w-4" /> Enregistré
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" /> Enregistrer
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
+          <Card className="border-border bg-card shadow-none">
+            <CardContent className="p-6">
+              <div className="space-y-6">
+                <div className="space-y-2.5">
+                  <Label className="text-[12px] font-semibold text-foreground">
+                    Fuseau horaire
+                  </Label>
+                  <Select value={timezone} onValueChange={setTimezone}>
+                    <SelectTrigger className="h-10 w-full border-border bg-background text-xs shadow-none transition-all hover:bg-muted focus:ring-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIMEZONES.map((tz) => (
+                        <SelectItem key={tz.value} value={tz.value} className="text-xs">
+                          {tz.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-      {/* Paramètres globaux (Fuseau + Modèle) */}
-      <div className="grid grid-cols-1 gap-6 rounded-xl bg-muted p-6 sm:grid-cols-2">
-        <div className="space-y-2.5">
-          <Label>Fuseau horaire</Label>
-          <Select value={timezone} onValueChange={setTimezone}>
-            <SelectTrigger className="h-10 border-border/80 bg-background transition-colors hover:bg-accent/50 focus:ring-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TIMEZONES.map((tz) => (
-                <SelectItem key={tz.value} value={tz.value}>
-                  {tz.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+                <div className="space-y-2.5">
+                  <Label className="text-[12px] font-semibold text-foreground">
+                    Modèle de planning
+                  </Label>
+                  <Select
+                    value={selectedTemplate}
+                    onValueChange={onTemplateChange}
+                  >
+                    <SelectTrigger className="h-10 w-full border-border bg-background text-xs shadow-none transition-all hover:bg-muted focus:ring-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel className="text-[11px] font-semibold text-foreground/70">
+                          Prédéfinis
+                        </SelectLabel>
+                        {SCHEDULE_TEMPLATES.map((t) => (
+                          <SelectItem key={t.id} value={t.id} className="text-xs">
+                            {t.label}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                      <Separator className="my-1" />
+                      <SelectGroup>
+                        <SelectItem value="custom" className="text-xs">
+                          Configuration personnalisée
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          </div>
 
-        <div className="space-y-2.5">
-          <Label>Modèle de planning</Label>
-          <Select value={selectedTemplate} onValueChange={onTemplateChange}>
-            <SelectTrigger className="h-10 border-border/80 bg-background transition-colors hover:bg-accent/50 focus:ring-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel className="text-[11px] font-medium text-muted-foreground">
-                  Prédéfinis
-                </SelectLabel>
-                {SCHEDULE_TEMPLATES.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel className="text-[11px] font-medium text-muted-foreground">
-                  Options
-                </SelectLabel>
-                <SelectItem value="custom">
-                  Configuration personnalisée
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-medium text-foreground">
+                Détail de la semaine
+              </h3>
+            </div>
 
-      {/* Détail de la semaine */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between px-1">
-          <h3 className="font-medium text-foreground">Détail de la semaine</h3>
-          <div className="flex items-center gap-3 rounded-full bg-muted px-4 py-1.5">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-muted-foreground">
-                Volume hebdomadaire :
-              </span>
-              <span className="text-lg font-bold tracking-tight text-primary tabular-nums">
-                {formatDuration(weekTotal)}
-              </span>
+            <div className="space-y-4">
+              {DAYS.map((day) => {
+                const dayShed = schedule[day]
+                const dayTotal = calculateDayDuration(dayShed)
+                const isOverlap = checkOverlap(dayShed.slots)
+
+                return (
+                  <div
+                    key={day}
+                    className={cn(
+                      "relative overflow-hidden rounded-xl border transition-all duration-200",
+                      dayShed.active
+                        ? cn(
+                            "border-border bg-background",
+                            isOverlap &&
+                              "border-destructive ring-1 ring-destructive/20"
+                          )
+                        : "border-border bg-transparent opacity-60"
+                    )}
+                  >
+                    <div className="flex items-center justify-between px-6 py-4 lg:pl-6">
+                      <div className="flex w-full items-center gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1 text-sm font-semibold">
+                            {day} -
+                            <div className="font-normal text-muted-foreground">
+                              <span>{formatDuration(dayTotal)}</span> de jours
+                              travailler
+                            </div>
+                          </div>
+                          {isOverlap && (
+                            <span className="flex items-center gap-1 text-[10px] font-bold text-destructive">
+                              Chevauchement
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <Switch
+                        checked={dayShed.active}
+                        onCheckedChange={() => handleToggle(day)}
+                        className="scale-125"
+                      />
+                    </div>
+
+                    {dayShed.active && (
+                      <div className="border-t border-border bg-transparent p-4 lg:pl-6">
+                        <div className="space-y-3">
+                          {dayShed.slots.map((slot, index) => (
+                            <div key={slot.id} className="space-y-1.5">
+                              <div className="flex items-center px-1">
+                                <span className="text-xs text-muted-foreground">
+                                  Créneau {index + 1}
+                                </span>
+                              </div>
+                              <div className="group flex flex-wrap items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="relative">
+                                    <Input
+                                      type="time"
+                                      value={slot.start}
+                                      onChange={(e) =>
+                                        updateSlot(
+                                          day,
+                                          slot.id,
+                                          "start",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="transition-focus h-9 w-[110px] border-border bg-background px-3 text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                                    />
+                                  </div>
+                                  <span className="font-light text-muted-foreground/40">
+                                    —
+                                  </span>
+                                  <div className="relative">
+                                    <Input
+                                      type="time"
+                                      value={slot.end}
+                                      onChange={(e) =>
+                                        updateSlot(
+                                          day,
+                                          slot.id,
+                                          "end",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="transition-focus h-9 w-[110px] border-border bg-background px-3 text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                                    />
+                                  </div>
+                                </div>
+
+                                <Select
+                                  value={slot.location}
+                                  onValueChange={(v) =>
+                                    updateSlot(day, slot.id, "location", v)
+                                  }
+                                >
+                                  <SelectTrigger className="h-9 w-40 border-border bg-background text-[11px] shadow-none focus:ring-0">
+                                    <SelectValue placeholder="Lieu" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem
+                                      value="Télétravail"
+                                      className="text-[11px]"
+                                    >
+                                      Télétravail
+                                    </SelectItem>
+                                    <SelectGroup>
+                                      <SelectLabel className="px-2 py-1 text-[11px] font-semibold text-foreground/70">
+                                        Sites
+                                      </SelectLabel>
+                                      <SelectItem
+                                        value="Siège Social"
+                                        className="text-[11px]"
+                                      >
+                                        Siège Social
+                                      </SelectItem>
+                                      <SelectItem
+                                        value="Antenne Plateau"
+                                        className="text-[11px]"
+                                      >
+                                        Antenne Plateau
+                                      </SelectItem>
+                                      <SelectItem
+                                        value="Agence Cocody"
+                                        className="text-[11px]"
+                                      >
+                                        Agence Cocody
+                                      </SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-9 w-9 text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
+                                  onClick={() => removeSlot(day, slot.id)}
+                                >
+                                  <Icons.Trash className="size-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+
+                          <div className="pr-[60px]">
+                            <Button
+                              variant="outline"
+                              className="h-10 w-full text-xs font-semibold hover:bg-muted"
+                              onClick={() => addSlot(day)}
+                            >
+                              Ajouter un créneau
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          {DAYS.map((day) => {
-            const dayShed = schedule[day]
-            const dayTotal = calculateDayDuration(dayShed)
-            const isOverlap = checkOverlap(dayShed.slots)
+        {/* Colonne DROITE : Résumé Uniquement */}
+        <div className="h-fit w-[50%] space-y-6 lg:sticky lg:top-[148px]">
+          <div className="rounded-2xl border p-6">
+            <h4 className="flex items-center font-semibold">
+              Résumé hebdomadaire
+            </h4>
 
-            return (
-              <div
-                key={day}
-                className={cn(
-                  "flex flex-col gap-4 rounded-lg border p-4 transition-all duration-200",
-                  dayShed.active
-                    ? cn(
-                        "border-border bg-card",
-                        isOverlap &&
-                          "border-destructive/40 ring-1 ring-destructive/20"
-                      )
-                    : "border-transparent bg-muted/40 opacity-70"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <Switch
-                      checked={dayShed.active}
-                      onCheckedChange={() => handleToggle(day)}
-                    />
-                    <span className="text-sm font-semibold">{day}</span>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    {isOverlap && (
-                      <div className="flex animate-pulse items-center gap-1.5 text-[10px] font-medium text-destructive">
-                        <AlertCircle className="h-3 w-3" />
-                        Chevauchement détecté
-                      </div>
-                    )}
-                    <div
+            <div className="mt-6">
+              <div className="flex items-center justify-between pb-2 font-semibold">
+                <span>Jours de travail</span>
+                <span>Heures de travail</span>
+              </div>
+              <Separator className="mb-2 opacity-50" />
+              {DAYS.map((day) => {
+                const dayShed = schedule[day]
+                const dayDuration = calculateDayDuration(dayShed)
+                return (
+                  <div
+                    key={day}
+                    className="flex items-center justify-between border-b border-dashed py-3 text-[13px]"
+                  >
+                    <span
                       className={cn(
-                        "group flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums transition-colors",
-                        dayTotal > 0
-                          ? "bg-muted text-primary"
-                          : "border border-transparent bg-muted text-muted-foreground"
+                        "font-medium",
+                        dayShed.active
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                       )}
                     >
-                      {formatDuration(dayTotal)}
-                    </div>
+                      {day}
+                    </span>
+                    <span
+                      className={cn(
+                        "font-bold tabular-nums",
+                        dayDuration > 0
+                          ? "text-primary"
+                          : "text-muted-foreground/60"
+                      )}
+                    >
+                      {dayDuration > 0 ? formatDuration(dayDuration) : "—"}
+                    </span>
+                  </div>
+                )
+              })}
+
+              <div className="pt-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold">Total Semaine</span>
+                  <div className="text-right">
+                    <span className="block text-2xl font-black tracking-tight text-primary tabular-nums">
+                      {formatDuration(weekTotal)}
+                    </span>
                   </div>
                 </div>
-
-                {dayShed.active && (
-                  <div className="space-y-1 pl-12">
-                    {dayShed.slots.length > 0 && (
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="w-28 text-[11px] font-medium tracking-tight text-muted-foreground">
-                            Début
-                          </span>
-                          <span className="invisible w-3 text-center">à</span>
-                          <span className="w-28 text-[11px] font-medium tracking-tight text-muted-foreground">
-                            Fin
-                          </span>
-                        </div>
-                        <span className="w-32 text-[11px] font-medium tracking-tight text-muted-foreground">
-                          Lieu de travail
-                        </span>
-                      </div>
-                    )}
-                    {dayShed.slots.map((slot) => (
-                      <div
-                        key={slot.id}
-                        className="group flex items-center gap-3"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="time"
-                            value={slot.start}
-                            onChange={(e) =>
-                              updateSlot(day, slot.id, "start", e.target.value)
-                            }
-                            className="h-8 w-28 bg-transparent text-center text-xs"
-                          />
-                          <span className="text-muted-foreground">à</span>
-                          <Input
-                            type="time"
-                            value={slot.end}
-                            onChange={(e) =>
-                              updateSlot(day, slot.id, "end", e.target.value)
-                            }
-                            className="h-8 w-28 bg-transparent text-center text-xs"
-                          />
-                        </div>
-
-                        <Select
-                          value={slot.location}
-                          onValueChange={(v) =>
-                            updateSlot(day, slot.id, "location", v)
-                          }
-                        >
-                          <SelectTrigger className="h-8 w-32 border-border/40 bg-transparent text-[10px] focus:ring-0">
-                            <SelectValue placeholder="Lieu" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem
-                              value="Télétravail"
-                              className="text-[10px]"
-                            >
-                              Télétravail
-                            </SelectItem>
-                            <SelectGroup>
-                              <SelectLabel className="px-2 py-1 text-[9px] leading-none font-bold text-muted-foreground/60 uppercase">
-                                Sites & Établissements
-                              </SelectLabel>
-                              <SelectItem
-                                value="Siège Social"
-                                className="text-[10px]"
-                              >
-                                Siège Social
-                              </SelectItem>
-                              <SelectItem
-                                value="Antenne Plateau"
-                                className="text-[10px]"
-                              >
-                                Antenne Plateau
-                              </SelectItem>
-                              <SelectItem
-                                value="Agence Cocody"
-                                className="text-[10px]"
-                              >
-                                Agence Cocody
-                              </SelectItem>
-                              <SelectItem
-                                value="Site Industriel"
-                                className="text-[10px]"
-                              >
-                                Site Industriel
-                              </SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                          onClick={() => removeSlot(day, slot.id)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    ))}
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-1 h-8 gap-1.5 border-dashed text-[11px] text-muted-foreground transition-all duration-200 hover:border-primary hover:text-primary"
-                      onClick={() => addSlot(day)}
-                    >
-                      <Plus className="h-3 w-3" />
-                      Ajouter un créneau
-                    </Button>
-                  </div>
-                )}
               </div>
-            )
-          })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

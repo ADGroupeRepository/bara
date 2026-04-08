@@ -2,11 +2,9 @@
 
 import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
-  Pencil,
   Printer,
   MoreHorizontal,
   Search,
@@ -120,12 +118,6 @@ export function ProfileHeader({ employee }: ProfileHeaderProps) {
             <Printer className="h-4 w-4" />
             Imprimer
           </Button>
-          <Button size="sm" asChild>
-            <Link href={`/rh/employees/${employee.id}/edit`}>
-              <Pencil className="h-4 w-4" />
-              Modifier
-            </Link>
-          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="h-9 w-9 border-border text-foreground hover:bg-muted">
@@ -218,7 +210,7 @@ export function ProfileHeader({ employee }: ProfileHeaderProps) {
         typeof document !== "undefined" &&
         createPortal(
           <div
-            className="fixed inset-0 z-[99999] flex animate-in cursor-zoom-out items-center justify-center bg-black/90 p-4 backdrop-blur-sm duration-200 fade-in"
+            className="fixed inset-0 z-50 flex animate-in cursor-zoom-out items-center justify-center bg-black/90 p-4 backdrop-blur-sm duration-200 fade-in"
             style={{ height: "100vh", width: "100vw" }}
             onClick={() => setIsAvatarOpen(false)}
             role="dialog"
@@ -245,7 +237,7 @@ export function ProfileHeader({ employee }: ProfileHeaderProps) {
                 <span className="sr-only">Fermer</span>
               </Button>
 
-              <Avatar className="h-80 max-h-[80vh] w-80 max-w-[90vw] rounded-xl sm:h-[500px] sm:w-[500px]">
+              <Avatar className="h-80 max-h-[80vh] w-80 max-w-[90vw] rounded-xl sm:h-[31.25rem] sm:w-[31.25rem]">
                 <AvatarImage
                   src={employee.avatar}
                   alt={fullName}
