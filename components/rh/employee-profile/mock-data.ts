@@ -24,6 +24,14 @@ export type EmployeeDocument = {
   uploadedAt: string
 }
 
+export type FolderDocument = {
+  id: string
+  name: string
+  status: "Complet" | "Incomplet"
+  updatedAt: string
+  files: EmployeeDocument[]
+}
+
 export type ParcoursAcademique = {
   id: string
   diplome: string
@@ -87,13 +95,13 @@ export type EmployeeProfile = {
   dateFinContrat?: string
   periodeEssai: string
   statut: "Actif" | "En congé" | "Télétravail" | "Suspendu"
-  // Rémunération
-  salaireBase: string
+  // Rémunération (Standard Ivoirien)
+  salaireBase: string // Salaire de base (Catégoriel / Grille)
+  sursalaire: string   // Sursalaire (Négocié)
+  tauxHoraire: string   // Base horaire
   devise: string
   frequencePaiement: string
   methodesPaiement: PaymentMethod[]
-  indemniteTransport: string
-  primeLogement: string
   // Documents
   typeDocumentIdentite: string
   numeroCni: string
@@ -101,6 +109,7 @@ export type EmployeeProfile = {
   numeroSecuriteSociale: string
   numeroFiscal: string
   documents: EmployeeDocument[]
+  folderDocuments: FolderDocument[]
   // Formation
   niveauEtudes: string
   diplome: string
@@ -111,7 +120,7 @@ export type EmployeeProfile = {
   competences: string[]
   langues: string[]
   certifications: string[]
-  // Company & Organisation (New)
+  // Company & Organisation
   grade: string
   site: string
   // Notes
@@ -156,7 +165,10 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
     typeContrat: "CDI",
     periodeEssai: "3 mois",
     statut: "Actif",
-    salaireBase: "2 500 000",
+    // Rémunération
+    salaireBase: "450 000",
+    sursalaire: "1 500 000",
+    tauxHoraire: "12 500",
     devise: "XOF",
     frequencePaiement: "Mensuel",
     methodesPaiement: [
@@ -174,8 +186,6 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
         estPrincipal: false,
       },
     ],
-    indemniteTransport: "100 000",
-    primeLogement: "250 000",
     numeroCni: "CI-1985-0315-ABI-001",
     typeDocumentIdentite: "CNI (Carte Nationale d'Identité)",
     dateExpirationCni: "15/03/2030",
@@ -185,6 +195,52 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
       { id: "cv", label: "Curriculum Vitae", fileName: "CV_Sylla_Siaka.pdf", fileSize: "2.1 Mo", uploadedAt: "01/01/2020" },
       { id: "id-doc", label: "Pièce d'identité", fileName: "CNI_Sylla.pdf", fileSize: "1.4 Mo", uploadedAt: "01/01/2020" },
       { id: "motivation", label: "Lettre de motivation", fileName: "LM_Sylla_Siaka.pdf", fileSize: "0.8 Mo", uploadedAt: "01/01/2020" },
+    ],
+    folderDocuments: [
+      { 
+        id: "extrait-naissance", 
+        name: "Extrait d'acte de naissance des enfants", 
+        status: "Incomplet", 
+        updatedAt: "02/03/2026 à 11:53",
+        files: [
+          { id: "en-1", label: "Extrait Naissance Enfant 1", fileName: "naissance_1.pdf", fileSize: "1.2 Mo", uploadedAt: "02/03/2026" },
+        ]
+      },
+      { 
+        id: "diplomes", 
+        name: "Diplômes", 
+        status: "Incomplet", 
+        updatedAt: "09/01/2026 à 14:37",
+        files: [
+          { id: "pa-1", label: "Master Management", fileName: "Master_Management.pdf", fileSize: "2.1 Mo", uploadedAt: "09/01/2026" },
+          { id: "pa-2", label: "Licence Économie", fileName: "Licence_Eco.pdf", fileSize: "1.8 Mo", uploadedAt: "09/01/2026" },
+        ]
+      },
+      { 
+        id: "cni", 
+        name: "Carte nationale d'identité", 
+        status: "Incomplet", 
+        updatedAt: "09/01/2026 à 14:38",
+        files: [
+          { id: "cni-1", label: "CNI Recto-Verso", fileName: "CNI_Siaka_Sylla.pdf", fileSize: "1.4 Mo", uploadedAt: "09/01/2026" },
+        ]
+      },
+      { 
+        id: "arrete-fonction", 
+        name: "Arrêté de nomination dans la fonction", 
+        status: "Incomplet", 
+        updatedAt: "09/01/2026 à 14:37",
+        files: []
+      },
+      { 
+        id: "arrete-emploi", 
+        name: "Arrêté de nomination dans l'emploi", 
+        status: "Complet", 
+        updatedAt: "09/01/2026 à 14:39",
+        files: [
+          { id: "ae-1", label: "Arrêté Nomination DG", fileName: "Arrete_DG_Sylla.pdf", fileSize: "0.9 Mo", uploadedAt: "09/01/2026" },
+        ]
+      },
     ],
     niveauEtudes: "Bac+5",
     diplome: "Master en Management des Organisations",
@@ -244,7 +300,10 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
     typeContrat: "CDI",
     periodeEssai: "3 mois",
     statut: "Actif",
-    salaireBase: "1 200 000",
+    // Rémunération
+    salaireBase: "180 000",
+    sursalaire: "850 000",
+    tauxHoraire: "5 000",
     devise: "XOF",
     frequencePaiement: "Mensuel",
     methodesPaiement: [
@@ -256,8 +315,6 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
         estPrincipal: true,
       },
     ],
-    indemniteTransport: "50 000",
-    primeLogement: "100 000",
     numeroCni: "CI-1990-0722-BKE-002",
     typeDocumentIdentite: "Passeport",
     dateExpirationCni: "22/07/2028",
@@ -267,6 +324,11 @@ export const MOCK_EMPLOYEES: Record<string, EmployeeProfile> = {
       { id: "cv", label: "Curriculum Vitae", fileName: "CV_Dupont_Jean.pdf", fileSize: "1.8 Mo", uploadedAt: "15/03/2021" },
       { id: "id-doc", label: "Pièce d'identité", fileName: "CNI_Dupont.pdf", fileSize: "1.1 Mo", uploadedAt: "15/03/2021" },
       { id: "motivation", label: "Lettre de motivation", fileName: "LM_Dupont_Jean.pdf", fileSize: "0.9 Mo", uploadedAt: "15/03/2021" },
+    ],
+    folderDocuments: [
+      { id: "fd-1", name: "Extrait d'acte de naissance", status: "Complet", updatedAt: "01/01/2026 à 10:00", files: [] },
+      { id: "fd-2", name: "Diplômes", status: "Complet", updatedAt: "01/01/2026 à 10:00", files: [] },
+      { id: "fd-3", name: "Carte d'identité", status: "Complet", updatedAt: "01/01/2026 à 10:00", files: [] },
     ],
     niveauEtudes: "Bac+5",
     diplome: "Master en Informatique",

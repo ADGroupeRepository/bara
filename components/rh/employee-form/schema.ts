@@ -37,12 +37,12 @@ export const employeeSchema = z.object({
   telephoneProfessionnel: z.string().optional(),
   emailPersonnel: z
     .string()
-    .email("Email invalide")
+    .email({ message: "Email invalide" })
     .optional()
     .or(z.literal("")),
   emailProfessionnel: z
     .string()
-    .email("Email invalide")
+    .email({ message: "Email invalide" })
     .optional()
     .or(z.literal("")),
   contactsUrgence: z.array(
@@ -66,6 +66,7 @@ export const employeeSchema = z.object({
 
   // ── Rémunération ──
   salaireBase: z.string().optional(),
+  sursalaire: z.string().optional(),
   devise: z.string().optional(),
   frequencePaiement: z.string().optional(),
   methodesPaiement: z.array(
@@ -79,8 +80,7 @@ export const employeeSchema = z.object({
       estPrincipal: z.boolean(),
     })
   ),
-  indemniteTransport: z.string().optional(),
-  primeLogement: z.string().optional(),
+  tauxHoraire: z.string().optional(),
 
   // ── Documents ──
   numeroCni: z.string().optional(),
