@@ -192,75 +192,74 @@ export function StepContract({
         </CardContent>
       </Card>
 
-      {/* ── Salaire & Primes ──────────────────────────────────────────────── */}
-      <Card>
+      {/* ── Salaire & Primes ─────────────────────────────────────────────── */}
+      <Card className="shadow-none border-border/50 bg-transparent">
         <CardHeader>
-          <CardTitle>Salaire & Primes</CardTitle>
+          <CardTitle>Rémunération</CardTitle>
           <CardDescription>
-            Informations de rémunération et avantages
+            Structure salariale contractuelle
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Field>
-            <FieldLabel>Salaire de base</FieldLabel>
-            <Input
-              type="number"
-              placeholder="Ex: 500000"
-              {...register("salaireBase")}
-            />
-          </Field>
+        <CardContent className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Field data-invalid={!!errors.salaireBase}>
+              <FieldLabel>Salaire de base (Catégoriel)</FieldLabel>
+              <Input
+                placeholder="Ex: 450 000"
+                {...register("salaireBase")}
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel>Devise</FieldLabel>
-            <Select
-              value={watch("devise")}
-              onValueChange={(v) => handleSelectChange("devise", v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Sélectionner" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="XOF">XOF (FCFA)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="USD">USD ($)</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
+            <Field>
+              <FieldLabel>Sursalaire (Négocié)</FieldLabel>
+              <Input
+                placeholder="Ex: 800 000"
+                {...register("sursalaire")}
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel>Fréquence de paiement</FieldLabel>
-            <Select
-              value={watch("frequencePaiement")}
-              onValueChange={(v) => handleSelectChange("frequencePaiement", v)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Sélectionner" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Mensuel">Mensuel</SelectItem>
-                <SelectItem value="Bimensuel">Bimensuel</SelectItem>
-                <SelectItem value="Hebdomadaire">Hebdomadaire</SelectItem>
-              </SelectContent>
-            </Select>
-          </Field>
+            <Field>
+              <FieldLabel>Base horaire</FieldLabel>
+              <Input
+                placeholder="Ex: 5000"
+                {...register("tauxHoraire")}
+              />
+            </Field>
 
-          <Field>
-            <FieldLabel>Indemnité de transport</FieldLabel>
-            <Input
-              type="number"
-              placeholder="Ex: 30000"
-              {...register("indemniteTransport")}
-            />
-          </Field>
+            <Field>
+              <FieldLabel>Devise</FieldLabel>
+              <Select
+                value={watch("devise")}
+                onValueChange={(v) => handleSelectChange("devise", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sélectionner" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="XOF">XOF (FCFA)</SelectItem>
+                  <SelectItem value="EUR">EUR (€)</SelectItem>
+                  <SelectItem value="USD">USD ($)</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
 
-          <Field>
-            <FieldLabel>Prime de logement</FieldLabel>
-            <Input
-              type="number"
-              placeholder="Ex: 50000"
-              {...register("primeLogement")}
-            />
-          </Field>
+            <Field>
+              <FieldLabel>Fréquence</FieldLabel>
+              <Select
+                value={watch("frequencePaiement")}
+                onValueChange={(v) => handleSelectChange("frequencePaiement", v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sélectionner" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Mensuel">Mensuel</SelectItem>
+                  <SelectItem value="Bimensuel">Bimensuel</SelectItem>
+                  <SelectItem value="Hebdomadaire">Hebdomadaire</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
         </CardContent>
       </Card>
 
@@ -303,23 +302,19 @@ export function StepContract({
                 className="relative space-y-4 rounded-lg border bg-background/50 p-4"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      {isMobileMoney ? (
-                        <Smartphone className="h-4 w-4" />
-                      ) : mode === "Espèces" ? (
-                        <Banknote className="h-4 w-4" />
-                      ) : (
-                        <CreditCard className="h-4 w-4" />
-                      )}
-                    </div>
-                    <h4 className="text-sm font-medium">
-                      Méthode #{index + 1}
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        {isMobileMoney && <Smartphone className="h-4 w-4" />}
+                        {mode === "Espèces" && <Banknote className="h-4 w-4" />}
+                        {!isMobileMoney && mode !== "Espèces" && <CreditCard className="h-4 w-4" />}
+                      </div>
+                      <h4 className="text-sm font-medium">
+                        Méthode #{index + 1}
+                      </h4>
                     {watch(`methodesPaiement.${index}.estPrincipal`) && (
                       <Badge
                         variant="secondary"
-                        className="h-5 px-1.5 text-[10px] tracking-wider uppercase"
+                        className="h-5 px-1.5 text-[10px]"
                       >
                         Principal
                       </Badge>
@@ -327,7 +322,7 @@ export function StepContract({
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-medium text-muted-foreground uppercase">
+                      <span className="text-[10px] font-medium text-muted-foreground">
                         Principal
                       </span>
                       <Switch

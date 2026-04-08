@@ -1,18 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import {
-  Globe,
-  Save,
-  Check,
-  LayoutTemplate,
-  Clock,
-  Coffee,
-  Plus,
-  Trash2,
-  Settings2,
-  CopyCheck,
-} from "lucide-react"
+import { Save, Check, Plus, Trash2, AlertCircle, Clock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -27,35 +16,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 import type { EmployeeProfile } from "../mock-data"
 
-type Break = {
+type Slot = {
   id: string
   start: string
   end: string
+  location: string
 }
 
 type DaySchedule = {
   active: boolean
-  start: string
-  end: string
-  breaks: Break[]
+  slots: Slot[]
 }
 
 type ScheduleTemplate = {
@@ -90,69 +64,82 @@ const SCHEDULE_TEMPLATES: ScheduleTemplate[] = [
     schedule: {
       Lundi: {
         active: true,
-        start: "08:00",
-        end: "17:00",
-        breaks: [{ id: "b1", start: "12:00", end: "13:00" }],
+        slots: [
+          { id: "s1", start: "08:00", end: "12:00", location: "Siège Social" },
+          { id: "s2", start: "13:00", end: "17:00", location: "Siège Social" },
+        ],
       },
       Mardi: {
         active: true,
-        start: "08:00",
-        end: "17:00",
-        breaks: [{ id: "b1", start: "12:00", end: "13:00" }],
+        slots: [
+          { id: "s1", start: "08:00", end: "12:00", location: "Siège Social" },
+          { id: "s2", start: "13:00", end: "17:00", location: "Siège Social" },
+        ],
       },
       Mercredi: {
         active: true,
-        start: "08:00",
-        end: "17:00",
-        breaks: [{ id: "b1", start: "12:00", end: "13:00" }],
+        slots: [
+          { id: "s1", start: "08:00", end: "12:00", location: "Siège Social" },
+          { id: "s2", start: "13:00", end: "17:00", location: "Siège Social" },
+        ],
       },
       Jeudi: {
         active: true,
-        start: "08:00",
-        end: "17:00",
-        breaks: [{ id: "b1", start: "12:00", end: "13:00" }],
+        slots: [
+          { id: "s1", start: "08:00", end: "12:00", location: "Siège Social" },
+          { id: "s2", start: "13:00", end: "17:00", location: "Siège Social" },
+        ],
       },
       Vendredi: {
         active: true,
-        start: "08:00",
-        end: "17:00",
-        breaks: [{ id: "b1", start: "12:00", end: "13:00" }],
+        slots: [
+          { id: "s1", start: "08:00", end: "12:00", location: "Siège Social" },
+          { id: "s2", start: "13:00", end: "17:00", location: "Siège Social" },
+        ],
       },
-      Samedi: { active: false, start: "09:00", end: "12:00", breaks: [] },
-      Dimanche: { active: false, start: "00:00", end: "00:00", breaks: [] },
+      Samedi: { active: false, slots: [] },
+      Dimanche: { active: false, slots: [] },
     },
   },
   {
-    id: "interrupted",
+    id: "continuous",
     label: "Service continu (08h00 - 16h00)",
     schedule: {
-      Lundi: { active: true, start: "08:00", end: "16:00", breaks: [] },
-      Mardi: { active: true, start: "08:00", end: "16:00", breaks: [] },
-      Mercredi: { active: true, start: "08:00", end: "16:00", breaks: [] },
-      Jeudi: { active: true, start: "08:00", end: "16:00", breaks: [] },
-      Vendredi: { active: true, start: "08:00", end: "16:00", breaks: [] },
-      Samedi: { active: false, start: "09:00", end: "12:00", breaks: [] },
-      Dimanche: { active: false, start: "00:00", end: "00:00", breaks: [] },
-    },
-  },
-  {
-    id: "morning",
-    label: "Matinées (08h00 - 13h00)",
-    schedule: {
-      Lundi: { active: true, start: "08:00", end: "13:00", breaks: [] },
-      Mardi: { active: true, start: "08:00", end: "13:00", breaks: [] },
-      Mercredi: { active: true, start: "08:00", end: "13:00", breaks: [] },
-      Jeudi: { active: true, start: "08:00", end: "13:00", breaks: [] },
-      Vendredi: { active: true, start: "08:00", end: "13:00", breaks: [] },
-      Samedi: { active: true, start: "08:00", end: "12:00", breaks: [] },
-      Dimanche: { active: false, start: "00:00", end: "00:00", breaks: [] },
+      Lundi: {
+        active: true,
+        slots: [
+          { id: "s1", start: "08:00", end: "16:00", location: "Siège Social" },
+        ],
+      },
+      Mardi: {
+        active: true,
+        slots: [
+          { id: "s1", start: "08:00", end: "16:00", location: "Siège Social" },
+        ],
+      },
+      Mercredi: {
+        active: true,
+        slots: [
+          { id: "s1", start: "08:00", end: "16:00", location: "Siège Social" },
+        ],
+      },
+      Jeudi: {
+        active: true,
+        slots: [
+          { id: "s1", start: "08:00", end: "16:00", location: "Siège Social" },
+        ],
+      },
+      Vendredi: {
+        active: true,
+        slots: [
+          { id: "s1", start: "08:00", end: "16:00", location: "Siège Social" },
+        ],
+      },
+      Samedi: { active: false, slots: [] },
+      Dimanche: { active: false, slots: [] },
     },
   },
 ]
-
-type TabScheduleProps = {
-  readonly employee: EmployeeProfile
-}
 
 const toMinutes = (time: string) => {
   if (!time) return 0
@@ -167,6 +154,24 @@ const formatDuration = (totalMinutes: number) => {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 }
 
+type TabScheduleProps = {
+  readonly employee: EmployeeProfile
+}
+
+// Vérifie si deux créneaux se chevauchent
+const checkOverlap = (slots: Slot[]) => {
+  const sorted = [...slots]
+    .filter((s) => s.start && s.end)
+    .sort((a, b) => toMinutes(a.start) - toMinutes(b.start))
+
+  for (let i = 0; i < sorted.length - 1; i++) {
+    if (toMinutes(sorted[i].end) > toMinutes(sorted[i + 1].start)) {
+      return true
+    }
+  }
+  return false
+}
+
 export function TabSchedule({ employee }: TabScheduleProps) {
   const [schedule, setSchedule] = useState<Record<string, DaySchedule>>(
     structuredClone(SCHEDULE_TEMPLATES[0].schedule)
@@ -176,81 +181,71 @@ export function TabSchedule({ employee }: TabScheduleProps) {
   const [isSaved, setIsSaved] = useState(false)
 
   const handleToggle = (day: string) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: { ...prev[day], active: !prev[day].active },
-    }))
+    setSchedule((prev) => {
+      const dayShed = prev[day]
+      const newActive = !dayShed.active
+      // Si on active un jour vide, on lui met un créneau par défaut
+      const newSlots =
+        newActive && dayShed.slots.length === 0
+          ? [
+              {
+                id: Math.random().toString(36).substring(2, 9),
+                start: "08:00",
+                end: "17:00",
+                location: "Siège Social",
+              },
+            ]
+          : dayShed.slots
+
+      return {
+        ...prev,
+        [day]: { ...dayShed, active: newActive, slots: newSlots },
+      }
+    })
     setSelectedTemplate("custom")
   }
 
-  const handleTimeChange = (
-    day: string,
-    field: "start" | "end",
-    value: string
-  ) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: { ...prev[day], [field]: value },
-    }))
-    setSelectedTemplate("custom")
-  }
-
-  const handleBreakChange = (
-    day: string,
-    breakId: string,
-    field: "start" | "end",
-    value: string
-  ) => {
-    setSchedule((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        breaks: prev[day].breaks.map((b) =>
-          b.id === breakId ? { ...b, [field]: value } : b
-        ),
-      },
-    }))
-    setSelectedTemplate("custom")
-  }
-
-  const addBreak = (day: string) => {
+  const addSlot = (day: string) => {
     const newId = Math.random().toString(36).substring(2, 9)
     setSchedule((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
-        breaks: [
-          ...prev[day].breaks,
-          { id: newId, start: "12:00", end: "13:00" },
+        slots: [
+          ...prev[day].slots,
+          { id: newId, start: "12:00", end: "13:00", location: "Siège Social" },
         ],
       },
     }))
     setSelectedTemplate("custom")
   }
 
-  const removeBreak = (day: string, breakId: string) => {
+  const removeSlot = (day: string, slotId: string) => {
     setSchedule((prev) => ({
       ...prev,
       [day]: {
         ...prev[day],
-        breaks: prev[day].breaks.filter((b) => b.id !== breakId),
+        slots: prev[day].slots.filter((s) => s.id !== slotId),
       },
     }))
     setSelectedTemplate("custom")
   }
 
-  const copyBreaksToAllDays = (sourceDay: string) => {
-    const breaksToCopy = structuredClone(schedule[sourceDay].breaks)
-    const newSchedule = { ...schedule }
-    DAYS.forEach((day) => {
-      if (day !== sourceDay && newSchedule[day].active) {
-        newSchedule[day] = {
-          ...newSchedule[day],
-          breaks: structuredClone(breaksToCopy),
-        }
-      }
-    })
-    setSchedule(newSchedule)
+  const updateSlot = (
+    day: string,
+    slotId: string,
+    field: keyof Slot,
+    value: string
+  ) => {
+    setSchedule((prev) => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        slots: prev[day].slots.map((s) =>
+          s.id === slotId ? { ...s, [field]: value } : s
+        ),
+      },
+    }))
     setSelectedTemplate("custom")
   }
 
@@ -266,12 +261,10 @@ export function TabSchedule({ employee }: TabScheduleProps) {
 
   const calculateDayDuration = (dayShed: DaySchedule) => {
     if (!dayShed.active) return 0
-    const grossMin = toMinutes(dayShed.end) - toMinutes(dayShed.start)
-    const breaksMin = dayShed.breaks.reduce(
-      (sum, b) => sum + (toMinutes(b.end) - toMinutes(b.start)),
-      0
-    )
-    return Math.max(0, grossMin - breaksMin)
+    return dayShed.slots.reduce((sum, s) => {
+      const dur = toMinutes(s.end) - toMinutes(s.start)
+      return sum + Math.max(0, dur)
+    }, 0)
   }
 
   const weekTotal = useMemo(() => {
@@ -295,7 +288,7 @@ export function TabSchedule({ employee }: TabScheduleProps) {
             Emploi du temps
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Configurez les horaires de travail de {employee.prenom}{" "}
+            Planifiez les créneaux de travail de {employee.prenom}{" "}
             {employee.nom}.
           </p>
         </div>
@@ -304,17 +297,17 @@ export function TabSchedule({ employee }: TabScheduleProps) {
           <Button
             onClick={handleSave}
             className={cn(
-              "h-10 px-6 font-medium transition-all",
+              "px-4 transition-all",
               isSaved ? "bg-green-600 text-white hover:bg-green-700" : ""
             )}
           >
             {isSaved ? (
               <>
-                <Check className="mr-2 h-4 w-4" /> Enregistré
+                <Check className="h-4 w-4" /> Enregistré
               </>
             ) : (
               <>
-                <Save className="mr-2 h-4 w-4" /> Enregistrer
+                <Save className="h-4 w-4" /> Enregistrer
               </>
             )}
           </Button>
@@ -322,11 +315,9 @@ export function TabSchedule({ employee }: TabScheduleProps) {
       </div>
 
       {/* Paramètres globaux (Fuseau + Modèle) */}
-      <div className="grid grid-cols-1 gap-6 rounded-xl border border-border/50 bg-muted/30 p-6 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 rounded-xl bg-muted p-6 sm:grid-cols-2">
         <div className="space-y-2.5">
-          <Label className="flex items-center gap-2 text-muted-foreground">
-            <Globe className="h-4 w-4" /> Fuseau horaire
-          </Label>
+          <Label>Fuseau horaire</Label>
           <Select value={timezone} onValueChange={setTimezone}>
             <SelectTrigger className="h-10 border-border/80 bg-background transition-colors hover:bg-accent/50 focus:ring-0">
               <SelectValue />
@@ -342,16 +333,14 @@ export function TabSchedule({ employee }: TabScheduleProps) {
         </div>
 
         <div className="space-y-2.5">
-          <Label className="flex items-center gap-2 text-muted-foreground">
-            <LayoutTemplate className="h-4 w-4" /> Modèle de planning
-          </Label>
+          <Label>Modèle de planning</Label>
           <Select value={selectedTemplate} onValueChange={onTemplateChange}>
             <SelectTrigger className="h-10 border-border/80 bg-background transition-colors hover:bg-accent/50 focus:ring-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel className="font-medium text-muted-foreground">
+                <SelectLabel className="text-[11px] font-medium text-muted-foreground">
                   Prédéfinis
                 </SelectLabel>
                 {SCHEDULE_TEMPLATES.map((t) => (
@@ -361,7 +350,7 @@ export function TabSchedule({ employee }: TabScheduleProps) {
                 ))}
               </SelectGroup>
               <SelectGroup>
-                <SelectLabel className="font-medium text-muted-foreground">
+                <SelectLabel className="text-[11px] font-medium text-muted-foreground">
                   Options
                 </SelectLabel>
                 <SelectItem value="custom">
@@ -376,233 +365,181 @@ export function TabSchedule({ employee }: TabScheduleProps) {
       {/* Détail de la semaine */}
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <h3 className="font-medium text-foreground">
-              Détail de la semaine
-            </h3>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>Temps effectif total :</span>
-            <span className="text-xl font-bold tracking-tight text-primary">
-              {formatDuration(weekTotal)}
-            </span>
+          <h3 className="font-medium text-foreground">Détail de la semaine</h3>
+          <div className="flex items-center gap-3 rounded-full bg-muted px-4 py-1.5">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-muted-foreground">
+                Volume hebdomadaire :
+              </span>
+              <span className="text-lg font-bold tracking-tight text-primary tabular-nums">
+                {formatDuration(weekTotal)}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-3">
           {DAYS.map((day) => {
             const dayShed = schedule[day]
             const dayTotal = calculateDayDuration(dayShed)
-            const hasBreaks = dayShed.breaks.length > 0
+            const isOverlap = checkOverlap(dayShed.slots)
 
             return (
               <div
                 key={day}
                 className={cn(
-                  "flex items-center justify-between rounded-lg border p-4 transition-colors",
+                  "flex flex-col gap-4 rounded-lg border p-4 transition-all duration-200",
                   dayShed.active
-                    ? "border-border/80 bg-card"
-                    : "border-transparent bg-muted/40 opacity-70 grayscale-[0.2]"
+                    ? cn(
+                        "border-border bg-card",
+                        isOverlap &&
+                          "border-destructive/40 ring-1 ring-destructive/20"
+                      )
+                    : "border-transparent bg-muted/40 opacity-70"
                 )}
               >
-                <div className="flex w-40 shrink-0 items-center gap-4">
-                  <Switch
-                    checked={dayShed.active}
-                    onCheckedChange={() => handleToggle(day)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                  <span className="text-sm font-medium">{day}</span>
-                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Switch
+                      checked={dayShed.active}
+                      onCheckedChange={() => handleToggle(day)}
+                    />
+                    <span className="text-sm font-semibold">{day}</span>
+                  </div>
 
-                <div className="mx-2 flex flex-1 items-center gap-3 border-r border-l border-border/40 px-6">
-                  <Input
-                    type="time"
-                    value={dayShed.start}
-                    onChange={(e) =>
-                      handleTimeChange(day, "start", e.target.value)
-                    }
-                    disabled={!dayShed.active}
-                    className="h-9 max-w-[110px] border-border/50 bg-transparent text-center transition-colors hover:bg-muted/30 focus:bg-background"
-                  />
-                  <span className="px-1 text-sm text-muted-foreground/60">
-                    -
-                  </span>
-                  <Input
-                    type="time"
-                    value={dayShed.end}
-                    onChange={(e) =>
-                      handleTimeChange(day, "end", e.target.value)
-                    }
-                    disabled={!dayShed.active}
-                    className="h-9 max-w-[110px] border-border/50 bg-transparent text-center transition-colors hover:bg-muted/30 focus:bg-background"
-                  />
-
-                  {/* Bouton de configuration des Pauses (Drawer Trigger) */}
-                  <div className="ml-auto">
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <Button
-                          variant={hasBreaks ? "secondary" : "ghost"}
-                          size="sm"
-                          disabled={!dayShed.active}
-                          className={cn(
-                            "h-9 px-3 transition-colors",
-                            !hasBreaks &&
-                              "text-muted-foreground hover:bg-muted/50"
-                          )}
-                        >
-                          {hasBreaks ? (
-                            <>
-                              <Coffee className="mr-2 h-3.5 w-3.5 text-black" />{" "}
-                              {dayShed.breaks.length} Pause
-                              {dayShed.breaks.length > 1 ? "s" : ""}
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="mr-1 h-3.5 w-3.5" /> Ajouter
-                              pause
-                            </>
-                          )}
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent className="flex w-[400px] flex-col border-l p-0 shadow-2xl sm:w-[540px]">
-                        <div className="border-b bg-muted/10 p-6">
-                          <SheetHeader>
-                            <SheetTitle className="flex items-center gap-2 text-xl">
-                              <Coffee className="h-5 w-5 text-muted-foreground" />
-                              Pauses du {day}
-                            </SheetTitle>
-                            <SheetDescription className="text-sm">
-                              Configurez les interruptions de la journée. Le
-                              temps de pause sera automatiquement déduit du
-                              total d&apos;heures travaillées.
-                            </SheetDescription>
-                          </SheetHeader>
-                        </div>
-
-                        <div className="flex-1 space-y-4 overflow-y-auto p-6">
-                          {dayShed.breaks.length === 0 ? (
-                            <div className="flex h-32 flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/60 bg-muted/10">
-                              <Coffee className="mb-2 h-8 w-8 text-muted-foreground/40" />
-                              <p className="text-sm text-muted-foreground">
-                                Aucune pause configurée
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="space-y-3">
-                              {dayShed.breaks.map((b) => (
-                                <div
-                                  key={b.id}
-                                  className="group flex items-center gap-3 rounded-xl border border-border/60 bg-muted/20 p-3"
-                                >
-                                  <div className="flex flex-1 items-center gap-3">
-                                    <div className="w-full space-y-1">
-                                      <Label className="ml-1 text-[10px] text-muted-foreground">
-                                        Heure de début
-                                      </Label>
-                                      <Input
-                                        type="time"
-                                        value={b.start}
-                                        onChange={(e) =>
-                                          handleBreakChange(
-                                            day,
-                                            b.id,
-                                            "start",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="bg-background focus:ring-primary/20"
-                                      />
-                                    </div>
-                                    <div className="w-full space-y-1">
-                                      <Label className="ml-1 text-[10px] text-muted-foreground">
-                                        Heure de fin
-                                      </Label>
-                                      <Input
-                                        type="time"
-                                        value={b.end}
-                                        onChange={(e) =>
-                                          handleBreakChange(
-                                            day,
-                                            b.id,
-                                            "end",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="bg-background focus:ring-primary/20"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="shrink-0 pt-5">
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                                            onClick={() =>
-                                              removeBreak(day, b.id)
-                                            }
-                                          >
-                                            <Trash2 className="h-4 w-4" />
-                                          </Button>
-                                        </TooltipTrigger>
-                                        <TooltipContent className="text-xs">
-                                          Supprimer cette pause
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-
-                          <Button
-                            variant="outline"
-                            className="h-11 w-full border-dashed text-muted-foreground hover:text-foreground"
-                            onClick={() => addBreak(day)}
-                          >
-                            <Plus className="mr-2 h-4 w-4" />
-                            {dayShed.breaks.length === 0
-                              ? "Ajouter une première pause"
-                              : "Ajouter une autre pause"}
-                          </Button>
-                        </div>
-
-                        <div className="mt-auto border-t bg-background p-6">
-                          <Button
-                            variant="secondary"
-                            className="h-11 w-full bg-primary/10 font-medium text-primary hover:bg-primary/20"
-                            onClick={() => copyBreaksToAllDays(day)}
-                            disabled={dayShed.breaks.length === 0}
-                          >
-                            <CopyCheck className="mr-2 h-4 w-4" /> Appliquer ces
-                            pauses à toute la semaine
-                          </Button>
-                          <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[10px] text-muted-foreground">
-                            <Settings2 className="h-3 w-3" />
-                            Les modifications s&apos;appliquent en temps réel et
-                            basculent le modèle en &quot;Personnalisé&quot;.
-                          </p>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
+                  <div className="flex items-center gap-4">
+                    {isOverlap && (
+                      <div className="flex animate-pulse items-center gap-1.5 text-[10px] font-medium text-destructive">
+                        <AlertCircle className="h-3 w-3" />
+                        Chevauchement détecté
+                      </div>
+                    )}
+                    <div
+                      className={cn(
+                        "group flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[11px] font-bold tabular-nums transition-colors",
+                        dayTotal > 0
+                          ? "bg-muted text-primary"
+                          : "border border-transparent bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {formatDuration(dayTotal)}
+                    </div>
                   </div>
                 </div>
 
-                <div className="w-24 shrink-0 px-2 text-right">
-                  <span
-                    className={cn(
-                      "text-sm font-semibold tabular-nums",
-                      dayTotal > 0 ? "text-foreground" : "text-muted-foreground"
+                {dayShed.active && (
+                  <div className="space-y-1 pl-12">
+                    {dayShed.slots.length > 0 && (
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="w-28 text-[11px] font-medium tracking-tight text-muted-foreground">
+                            Début
+                          </span>
+                          <span className="invisible w-3 text-center">à</span>
+                          <span className="w-28 text-[11px] font-medium tracking-tight text-muted-foreground">
+                            Fin
+                          </span>
+                        </div>
+                        <span className="w-32 text-[11px] font-medium tracking-tight text-muted-foreground">
+                          Lieu de travail
+                        </span>
+                      </div>
                     )}
-                  >
-                    {formatDuration(dayTotal)}
-                  </span>
-                </div>
+                    {dayShed.slots.map((slot) => (
+                      <div
+                        key={slot.id}
+                        className="group flex items-center gap-3"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="time"
+                            value={slot.start}
+                            onChange={(e) =>
+                              updateSlot(day, slot.id, "start", e.target.value)
+                            }
+                            className="h-8 w-28 bg-transparent text-center text-xs"
+                          />
+                          <span className="text-muted-foreground">à</span>
+                          <Input
+                            type="time"
+                            value={slot.end}
+                            onChange={(e) =>
+                              updateSlot(day, slot.id, "end", e.target.value)
+                            }
+                            className="h-8 w-28 bg-transparent text-center text-xs"
+                          />
+                        </div>
+
+                        <Select
+                          value={slot.location}
+                          onValueChange={(v) =>
+                            updateSlot(day, slot.id, "location", v)
+                          }
+                        >
+                          <SelectTrigger className="h-8 w-32 border-border/40 bg-transparent text-[10px] focus:ring-0">
+                            <SelectValue placeholder="Lieu" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem
+                              value="Télétravail"
+                              className="text-[10px]"
+                            >
+                              Télétravail
+                            </SelectItem>
+                            <SelectGroup>
+                              <SelectLabel className="px-2 py-1 text-[9px] leading-none font-bold text-muted-foreground/60 uppercase">
+                                Sites & Établissements
+                              </SelectLabel>
+                              <SelectItem
+                                value="Siège Social"
+                                className="text-[10px]"
+                              >
+                                Siège Social
+                              </SelectItem>
+                              <SelectItem
+                                value="Antenne Plateau"
+                                className="text-[10px]"
+                              >
+                                Antenne Plateau
+                              </SelectItem>
+                              <SelectItem
+                                value="Agence Cocody"
+                                className="text-[10px]"
+                              >
+                                Agence Cocody
+                              </SelectItem>
+                              <SelectItem
+                                value="Site Industriel"
+                                className="text-[10px]"
+                              >
+                                Site Industriel
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => removeSlot(day, slot.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-1 h-8 gap-1.5 border-dashed text-[11px] text-muted-foreground transition-all duration-200 hover:border-primary hover:text-primary"
+                      onClick={() => addSlot(day)}
+                    >
+                      <Plus className="h-3 w-3" />
+                      Ajouter un créneau
+                    </Button>
+                  </div>
+                )}
               </div>
             )
           })}

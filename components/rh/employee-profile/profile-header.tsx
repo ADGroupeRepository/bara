@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
   Pencil,
@@ -32,6 +33,7 @@ type ProfileHeaderProps = {
 }
 
 export function ProfileHeader({ employee }: ProfileHeaderProps) {
+  const router = useRouter()
   const [isAvatarOpen, setIsAvatarOpen] = useState(false)
   const [isCompact, setIsCompact] = useState(false)
   const profileInfoRef = useRef<HTMLDivElement>(null)
@@ -61,18 +63,16 @@ export function ProfileHeader({ employee }: ProfileHeaderProps) {
     <>
       {/* Top bar */}
       <div
-        className="sticky top-0 z-20 mb-2 flex items-center justify-between bg-white px-6 pt-6 pb-4"
+        className="sticky top-0 z-20 mb-2 flex items-center justify-between bg-background px-6 pt-6 pb-4"
       >
         <div className="relative flex items-center">
           <Button
             variant="outline"
             size="icon"
-            asChild
-            className="relative z-10 h-10 w-10 shrink-0 rounded-full bg-white"
+            onClick={() => router.back()}
+            className="relative z-10 h-10 w-10 shrink-0 rounded-full bg-white shadow-none"
           >
-            <Link href="/rh/employees">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
+            <ArrowLeft className="h-5 w-5" />
           </Button>
 
           <div
@@ -116,7 +116,7 @@ export function ProfileHeader({ employee }: ProfileHeaderProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="border-border text-foreground hover:bg-muted">
             <Printer className="h-4 w-4" />
             Imprimer
           </Button>
@@ -128,7 +128,7 @@ export function ProfileHeader({ employee }: ProfileHeaderProps) {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="h-9 w-9">
+              <Button variant="outline" size="icon" className="h-9 w-9 border-border text-foreground hover:bg-muted">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
