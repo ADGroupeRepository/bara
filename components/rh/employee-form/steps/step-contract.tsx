@@ -225,6 +225,14 @@ export function StepContract({
                 {...register("tauxHoraire")}
               />
             </Field>
+            
+            <Field>
+              <FieldLabel>Nombre d&apos;heures / mois</FieldLabel>
+              <Input
+                placeholder="Ex: 173.33"
+                {...register("heuresMensuelles")}
+              />
+            </Field>
 
             <Field>
               <FieldLabel>Devise</FieldLabel>

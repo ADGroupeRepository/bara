@@ -1,18 +1,6 @@
 import {
-  CreditCard,
-  Smartphone,
-  Banknote,
-  Download,
-  History,
-  CalendarDays,
-  Calculator,
-} from "lucide-react"
-
-import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -24,191 +12,283 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 
-import type { EmployeeProfile } from "../mock-data"
+import { Icons } from "@/components/layout/sidebar/icons"
+import type { EmployeeProfile, PaymentMethod } from "../mock-data"
+import { EditableInfoRow } from "../editable-info-row"
+import { EditableCardHeader } from "../editable-card-header"
+import { useCardEditing } from "../use-card-editing"
 
 type TabSalaryProps = {
   readonly employee: EmployeeProfile
 }
 
-function FinancialRow({
-  label,
-  value,
-  sublabel,
-  accent = false,
-}: {
-  readonly label: string
-  readonly value: string
-  readonly sublabel?: string
-  readonly accent?: boolean
-}) {
-  return (
-    <div className={cn(
-      "flex items-center justify-between py-2.5 border-b border-border last:border-0",
-      accent && "bg-primary/5 px-3 -mx-3 rounded-md"
-    )}>
-      <div>
-        <p className="text-sm font-medium text-foreground">{label}</p>
-        {sublabel && <p className="text-[10px] text-muted-foreground tracking-tight">{sublabel}</p>}
-      </div>
-      <div className="text-right">
-        <p className={cn("text-sm font-bold tabular-nums", accent ? "text-primary text-base" : "text-foreground")}>{value}</p>
-      </div>
-    </div>
-  )
-}
 
 export function TabSalary({ employee }: TabSalaryProps) {
-  // Calculs simples pour l'affichage
-  const parseAmount = (val: string) => Number.parseInt(val.replaceAll(/\s/g, "")) || 0
-  const formatAmount = (val: number) => new Intl.NumberFormat('fr-FR').format(val) + " " + employee.devise
+  const parseAmount = (val: string) =>
+    Number.parseInt(val.replaceAll(/\s/g, "")) || 0
+  const formatAmount = (val: number) =>
+    new Intl.NumberFormat("fr-FR").format(val) + " " + employee.devise
 
-  const bruteBase = parseAmount(employee.salaireBase) + parseAmount(employee.sursalaire)
-  const brutTotal = bruteBase
+  const remuEdit = useCardEditing({
+    salaireBase: employee.salaireBase,
+    sursalaire: employee.sursalaire,
+    tauxHoraire: employee.tauxHoraire,
+    heuresMensuelles: employee.heuresMensuelles,
+  })
+
+  const paymentEdit = useCardEditing({
+    methodesPaiement: employee.methodesPaiement,
+  })
+
+  const currentSalaireBase = remuEdit.isEditing ? remuEdit.formData.salaireBase : employee.salaireBase
+  const currentSursalaire = remuEdit.isEditing ? remuEdit.formData.sursalaire : employee.sursalaire
+
+  const bruteBase = parseAmount(currentSalaireBase) + parseAmount(currentSursalaire)
 
   return (
-    <ScrollArea className="h-full">
-      <div className="space-y-6 pb-12">
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Structure du Salaire (Brut Contractuel) */}
-          <Card className="border-border bg-card shadow-none">
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-2">
-                <Calculator className="h-4 w-4 text-primary" />
-                <CardTitle className="text-sm font-semibold tracking-tight text-foreground uppercase tracking-wider">Composantes de rémunération</CardTitle>
+    <div className="space-y-6 pb-12">
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Structure du Salaire */}
+        <Card className="border-border bg-card shadow-none">
+          <EditableCardHeader
+            title="Composantes de rémunération"
+            description="Détails du salaire de base et des compléments"
+            isEditing={remuEdit.isEditing}
+            onEdit={remuEdit.startEditing}
+            onCancel={remuEdit.cancelEditing}
+            onSave={() => remuEdit.saveEditing()}
+          />
+          <CardContent>
+            <div className="space-y-4">
+              <EditableInfoRow
+                label="Salaire de base (Catégoriel)"
+                value={remuEdit.isEditing ? remuEdit.formData.salaireBase : employee.salaireBase + " " + employee.devise}
+                fieldKey="salaireBase"
+                isEditing={remuEdit.isEditing}
+                onChange={remuEdit.updateField}
+              />
+              <EditableInfoRow
+                label="Sursalaire"
+                value={remuEdit.isEditing ? remuEdit.formData.sursalaire : employee.sursalaire + " " + employee.devise}
+                fieldKey="sursalaire"
+                isEditing={remuEdit.isEditing}
+                onChange={remuEdit.updateField}
+              />
+              <EditableInfoRow
+                label="Base horaire"
+                value={remuEdit.isEditing ? remuEdit.formData.tauxHoraire : employee.tauxHoraire + " " + employee.devise}
+                fieldKey="tauxHoraire"
+                isEditing={remuEdit.isEditing}
+                onChange={remuEdit.updateField}
+              />
+              <EditableInfoRow
+                label="Nombre d'heures / mois"
+                value={remuEdit.isEditing ? remuEdit.formData.heuresMensuelles : employee.heuresMensuelles + " h"}
+                fieldKey="heuresMensuelles"
+                isEditing={remuEdit.isEditing}
+                onChange={remuEdit.updateField}
+              />
+              
+              <div className="mt-4 flex flex-col gap-1.5 rounded-lg bg-primary/5 p-4">
+                <p className="text-xs font-medium text-primary">Total Salaire Brut</p>
+                <p className="text-lg font-bold text-primary tabular-nums">
+                  {formatAmount(bruteBase)}
+                </p>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-1">
-              <FinancialRow 
-                label="Salaire de base (Catégoriel)" 
-                sublabel="Selon grille conventionnelle"
-                value={employee.salaireBase + " " + employee.devise} 
-              />
-              <FinancialRow 
-                label="Sursalaire" 
-                sublabel="Négocié individuel"
-                value={employee.sursalaire + " " + employee.devise} 
-              />
-              <FinancialRow 
-                label="Base horaire" 
-                sublabel="Taux applicable par heure"
-                value={employee.tauxHoraire + " " + employee.devise} 
-              />
-              <div className="pt-4">
-                <FinancialRow 
-                  label="Total Salaire Brut" 
-                  sublabel="Avant charges et impôts"
-                  value={formatAmount(brutTotal)} 
-                  accent
-                />
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Moyens de Paiement */}
-          <Card className="border-border bg-card shadow-none">
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-primary" />
-                <CardTitle className="text-sm font-semibold tracking-tight text-foreground uppercase tracking-wider">Versement du salaire</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {employee.methodesPaiement.map((method) => {
-                  const isMobile = method.mode === "Mobile Money"
-                  function getPaymentIcon() {
-                    if (isMobile) return Smartphone
-                    if (method.mode === "Espèces") return Banknote
-                    return CreditCard
-                  }
-                  const Icon = getPaymentIcon()
-                  
-                  return (
-                    <div
-                      key={method.mode}
-                      className="flex items-center gap-4 rounded-xl border border-border p-4 bg-muted/20 hover:bg-muted/40 transition-colors group"
-                    >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-background border border-border transition-colors group-hover:border-primary group-hover:text-primary">
-                        <Icon className="h-5 w-5 text-muted-foreground transition-colors group-hover:text-primary" />
-                      </div>
-                      <div className="min-w-0 flex-1 space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-semibold text-foreground">{method.mode}</p>
-                          {method.estPrincipal && (
-                            <Badge className="h-4 px-1.5 text-[8px] bg-primary text-primary-foreground border-0 font-bold uppercase tracking-tighter">Principal</Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground font-medium">
-                          {method.banque || method.operateur}
+        {/* Moyens de Paiement */}
+        <Card className="border-border bg-card shadow-none">
+          <EditableCardHeader
+            title="Versement du salaire"
+            description="Méthodes et coordonnées de paiement"
+            isEditing={paymentEdit.isEditing}
+            onEdit={paymentEdit.startEditing}
+            onCancel={paymentEdit.cancelEditing}
+            onSave={() => paymentEdit.saveEditing()}
+          />
+          <CardContent>
+            <div className="space-y-6">
+              {(paymentEdit.isEditing
+                ? paymentEdit.formData.methodesPaiement
+                : employee.methodesPaiement
+              ).map((method, index) => {
+                const isMobile = method.mode === "Mobile Money"
+
+                return (
+                  <div
+                    key={method.mode}
+                    className="space-y-4 rounded-lg bg-muted p-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-foreground">
+                          {method.mode}
                         </p>
-                        <p className="font-mono text-[10px] text-muted-foreground/80">
-                          {method.numeroCompte || method.telephone}
-                        </p>
+                        {method.estPrincipal && (
+                          <Badge className="h-4 border-0 bg-primary px-1.5 text-[8px] font-bold tracking-tighter text-primary-foreground uppercase">
+                            Principal
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
+
+                    <div className="space-y-4">
+                      {paymentEdit.isEditing ? (
+                        <>
+                          <div className="flex flex-col gap-1.5">
+                            <p className="text-xs">Type / Mode</p>
+                            <Input
+                              value={method.mode}
+                              onChange={(e) => {
+                                const updated = [...paymentEdit.formData.methodesPaiement]
+                                updated[index] = { ...updated[index], mode: e.target.value }
+                                paymentEdit.updateField("methodesPaiement", updated as PaymentMethod[])
+                              }}
+                              className="h-9 border-border/40 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <p className="text-xs">Banque / Opérateur</p>
+                            <Input
+                              value={method.banque || method.operateur || ""}
+                              onChange={(e) => {
+                                const updated = [...paymentEdit.formData.methodesPaiement]
+                                if (isMobile) {
+                                  updated[index] = { ...updated[index], operateur: e.target.value }
+                                } else {
+                                  updated[index] = { ...updated[index], banque: e.target.value }
+                                }
+                                paymentEdit.updateField("methodesPaiement", updated as PaymentMethod[])
+                              }}
+                              className="h-9 border-border/40 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <p className="text-xs">N° compte / Téléphone</p>
+                            <Input
+                              value={method.numeroCompte || method.telephone || ""}
+                              onChange={(e) => {
+                                const updated = [...paymentEdit.formData.methodesPaiement]
+                                if (isMobile) {
+                                  updated[index] = { ...updated[index], telephone: e.target.value }
+                                } else {
+                                  updated[index] = { ...updated[index], numeroCompte: e.target.value }
+                                }
+                                paymentEdit.updateField("methodesPaiement", updated as PaymentMethod[])
+                              }}
+                              className="h-9 border-border/40 bg-background font-mono text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex flex-col gap-1.5">
+                            <p className="text-xs">Banque / Opérateur</p>
+                            <div className="rounded-md bg-background p-2.5">
+                              <span className="text-xs font-medium text-foreground">{method.banque || method.operateur}</span>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <p className="text-xs">N° compte / Téléphone</p>
+                            <div className="rounded-md bg-background p-2.5">
+                              <span className="font-mono text-xs font-medium text-foreground">{method.numeroCompte || method.telephone}</span>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Historique des Paiements — lecture seule */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">
+            Historique des paiements
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            Suivi des derniers bulletins et versements
+          </p>
         </div>
 
-        {/* Historique des Paiements */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 px-1 text-foreground font-semibold">
-            <History className="h-4 w-4 text-primary" />
-            <h4 className="text-sm uppercase tracking-wider">Historique des paiements</h4>
-          </div>
-          <Card className="border-border bg-card shadow-none overflow-hidden">
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-muted/50 border-b border-border hover:bg-muted/50">
-                    <TableHead className="text-[11px] font-bold pl-6 text-foreground">Période</TableHead>
-                    <TableHead className="text-[11px] font-bold text-foreground">Montant net</TableHead>
-                    <TableHead className="text-[11px] font-bold text-center text-foreground">Statut</TableHead>
-                    <TableHead className="text-[11px] font-bold text-foreground">Date paiement</TableHead>
-                    <TableHead className="text-[11px] font-bold text-right pr-6 text-foreground">Bulletin</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {employee.historiqueSalaires?.map((item) => (
-                    <TableRow key={item.id} className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors">
-                      <TableCell className="pl-6 text-sm font-medium text-foreground">{item.periode}</TableCell>
-                      <TableCell className="text-sm font-bold text-primary tabular-nums">{item.montantNet} {employee.devise}</TableCell>
-                      <TableCell className="text-center">
-                        <Badge
-                          variant={item.statut === "Payé" ? "secondary" : "outline"}
-                          className={cn(
-                            "px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter border-none cursor-default shadow-none",
-                            item.statut === "Payé" ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-50" : "bg-muted text-muted-foreground hover:bg-muted"
-                          )}
-                        >
-                          {item.statut}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground font-medium">
-                        <div className="flex items-center gap-1.5">
-                          <CalendarDays className="h-3 w-3" />
-                          {item.datePaiement}
-                        </div>
-                      </TableCell>
-                      <TableCell className="pr-6 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
+        <ScrollArea className="h-[calc(100vh-400px)] rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="pl-6 text-sm font-bold text-foreground">
+                  Période
+                </TableHead>
+                <TableHead className="text-sm font-bold text-foreground">
+                  Montant net
+                </TableHead>
+                <TableHead className="text-center text-sm font-bold text-foreground">
+                  Statut
+                </TableHead>
+                <TableHead className="text-sm font-bold text-foreground">
+                  Date paiement
+                </TableHead>
+                <TableHead className="pr-6 text-right text-sm font-bold text-foreground">
+                  Bulletin
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {employee.historiqueSalaires?.map((item) => (
+                <TableRow
+                  key={item.id}
+                  className="border-b border-border transition-colors last:border-0 hover:bg-muted/30"
+                >
+                  <TableCell className="py-3 pl-6 text-sm font-medium text-foreground">
+                    {item.periode}
+                  </TableCell>
+                  <TableCell className="py-3 text-sm font-bold text-primary tabular-nums">
+                    {item.montantNet} {employee.devise}
+                  </TableCell>
+                  <TableCell className="py-3 text-center">
+                    <Badge
+                      variant={
+                        item.statut === "Payé" ? "secondary" : "outline"
+                      }
+                      className={cn(
+                        "cursor-default border-none px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase shadow-none",
+                        item.statut === "Payé"
+                          ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-50"
+                          : "bg-muted text-muted-foreground hover:bg-muted"
+                      )}
+                    >
+                      {item.statut}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-3 text-xs font-medium text-muted-foreground">
+                    {item.datePaiement}
+                  </TableCell>
+                  <TableCell className="py-3 pr-6 text-right">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                    >
+                      <Icons.Download className="size-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </div>
-    </ScrollArea>
+    </div>
   )
 }

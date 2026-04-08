@@ -81,6 +81,7 @@ export const employeeSchema = z.object({
     })
   ),
   tauxHoraire: z.string().optional(),
+  heuresMensuelles: z.string().optional(),
 
   // ── Documents ──
   numeroCni: z.string().optional(),

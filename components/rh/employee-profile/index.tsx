@@ -1,7 +1,15 @@
 "use client"
 
 import { useRef } from "react"
-import { User, Briefcase, FileText, Phone, StickyNote, Clock, Banknote } from "lucide-react"
+import {
+  User,
+  Briefcase,
+  FileText,
+  Phone,
+  StickyNote,
+  Clock,
+  Banknote,
+} from "lucide-react"
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
@@ -15,6 +23,7 @@ import { TabDocuments } from "./tabs/tab-documents"
 import { TabEmergency } from "./tabs/tab-emergency"
 import { TabNotes } from "./tabs/tab-notes"
 import { TabSchedule } from "./tabs/tab-schedule"
+import { Icons } from "@/components/layout/sidebar/icons"
 
 type EmployeeProfileProps = {
   readonly employee: EmployeeProfileType
@@ -39,23 +48,23 @@ export function EmployeeProfile({ employee }: EmployeeProfileProps) {
         >
           <TabsList variant={"line"}>
             <TabsTrigger value="overview">
-              <User className="h-4 w-4" />
+              <Icons.User className="size-4.5" />
               Résumé
             </TabsTrigger>
             <TabsTrigger value="contract">
-              <Briefcase className="h-4 w-4" />
+              <Icons.Documents className="size-4.5" />
               Contrat
             </TabsTrigger>
             <TabsTrigger value="salary">
-              <Banknote className="h-4 w-4" />
+              <Icons.Dollar className="size-4.5" />
               Paie
             </TabsTrigger>
             <TabsTrigger value="documents">
-              <FileText className="h-4 w-4" />
+              <Icons.Documents className="size-4.5" />
               Documents
             </TabsTrigger>
             <TabsTrigger value="schedule">
-              <Clock className="h-4 w-4" />
+              <Icons.Calendar className="size-4.5" />
               Emploi du temps
             </TabsTrigger>
             <TabsTrigger value="emergency">
