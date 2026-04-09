@@ -20,6 +20,7 @@ import type { EmployeeProfile, EmployeeContact } from "../mock-data"
 import { EditableInfoRow } from "../editable-info-row"
 import { EditableCardHeader } from "../editable-card-header"
 import { useCardEditing } from "../use-card-editing"
+import { Label } from "@/components/ui/label"
 
 type TabEmergencyProps = {
   readonly employee: EmployeeProfile
@@ -27,8 +28,13 @@ type TabEmergencyProps = {
 
 const RELATION_OPTIONS = [
   { value: "Conjoint(e)", label: "Conjoint(e)" },
+  { value: "Conjoint", label: "Conjoint" },
+  { value: "Père", label: "Père" },
+  { value: "Mère", label: "Mère" },
   { value: "Parent", label: "Parent" },
   { value: "Enfant", label: "Enfant" },
+  { value: "Frère", label: "Frère" },
+  { value: "Sœur", label: "Sœur" },
   { value: "Frère/Sœur", label: "Frère/Sœur" },
   { value: "Ami(e)", label: "Ami(e)" },
   { value: "Autre", label: "Autre" },
@@ -65,7 +71,11 @@ export function TabEmergency({ employee }: TabEmergencyProps) {
     setContactsEditing(false)
   }
 
-  const updateContact = (index: number, field: keyof EmployeeContact, value: string) => {
+  const updateContact = (
+    index: number,
+    field: keyof EmployeeContact,
+    value: string
+  ) => {
     setEditableContacts((prev) => {
       const updated = [...prev]
       updated[index] = { ...updated[index], [field]: value }
@@ -84,7 +94,9 @@ export function TabEmergency({ employee }: TabEmergencyProps) {
     setEditableContacts((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const currentContacts = contactsEditing ? editableContacts : employee.contactsUrgence
+  const currentContacts = contactsEditing
+    ? editableContacts
+    : employee.contactsUrgence
 
   return (
     <div className="space-y-6">
@@ -99,68 +111,96 @@ export function TabEmergency({ employee }: TabEmergencyProps) {
           onSave={() => coordEdit.saveEditing()}
         />
         <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-              <EditableInfoRow
-                label="Adresse"
-                value={coordEdit.isEditing ? coordEdit.formData.adresse : employee.adresse}
-                fieldKey="adresse"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-              />
-              <EditableInfoRow
-                label="Ville"
-                value={coordEdit.isEditing ? coordEdit.formData.ville : employee.ville}
-                fieldKey="ville"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-              />
-              <EditableInfoRow
-                label="Code postal"
-                value={coordEdit.isEditing ? coordEdit.formData.codePostal : employee.codePostal}
-                fieldKey="codePostal"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-              />
-              <EditableInfoRow
-                label="Pays"
-                value={coordEdit.isEditing ? coordEdit.formData.pays : employee.pays}
-                fieldKey="pays"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-              />
-              <EditableInfoRow
-                label="Téléphone personnel"
-                value={coordEdit.isEditing ? coordEdit.formData.telephonePersonnel : employee.telephonePersonnel}
-                fieldKey="telephonePersonnel"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-                type="tel"
-              />
-              <EditableInfoRow
-                label="Téléphone professionnel"
-                value={coordEdit.isEditing ? coordEdit.formData.telephoneProfessionnel : employee.telephoneProfessionnel}
-                fieldKey="telephoneProfessionnel"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-                type="tel"
-              />
-              <EditableInfoRow
-                label="Email personnel"
-                value={coordEdit.isEditing ? coordEdit.formData.emailPersonnel : employee.emailPersonnel}
-                fieldKey="emailPersonnel"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-                type="email"
-              />
-              <EditableInfoRow
-                label="Email professionnel"
-                value={coordEdit.isEditing ? coordEdit.formData.emailProfessionnel : employee.emailProfessionnel}
-                fieldKey="emailProfessionnel"
-                isEditing={coordEdit.isEditing}
-                onChange={coordEdit.updateField}
-                type="email"
-              />
-            </div>
+          <div className="grid grid-cols-1 gap-x-12 gap-y-6 md:grid-cols-2">
+            <EditableInfoRow
+              label="Adresse"
+              value={
+                coordEdit.isEditing
+                  ? coordEdit.formData.adresse
+                  : employee.adresse
+              }
+              fieldKey="adresse"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+            />
+            <EditableInfoRow
+              label="Ville"
+              value={
+                coordEdit.isEditing ? coordEdit.formData.ville : employee.ville
+              }
+              fieldKey="ville"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+            />
+            <EditableInfoRow
+              label="Code postal"
+              value={
+                coordEdit.isEditing
+                  ? coordEdit.formData.codePostal
+                  : employee.codePostal
+              }
+              fieldKey="codePostal"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+            />
+            <EditableInfoRow
+              label="Pays"
+              value={
+                coordEdit.isEditing ? coordEdit.formData.pays : employee.pays
+              }
+              fieldKey="pays"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+            />
+            <EditableInfoRow
+              label="Téléphone personnel"
+              value={
+                coordEdit.isEditing
+                  ? coordEdit.formData.telephonePersonnel
+                  : employee.telephonePersonnel
+              }
+              fieldKey="telephonePersonnel"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+              type="tel"
+            />
+            <EditableInfoRow
+              label="Téléphone professionnel"
+              value={
+                coordEdit.isEditing
+                  ? coordEdit.formData.telephoneProfessionnel
+                  : employee.telephoneProfessionnel
+              }
+              fieldKey="telephoneProfessionnel"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+              type="tel"
+            />
+            <EditableInfoRow
+              label="Email personnel"
+              value={
+                coordEdit.isEditing
+                  ? coordEdit.formData.emailPersonnel
+                  : employee.emailPersonnel
+              }
+              fieldKey="emailPersonnel"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+              type="email"
+            />
+            <EditableInfoRow
+              label="Email professionnel"
+              value={
+                coordEdit.isEditing
+                  ? coordEdit.formData.emailProfessionnel
+                  : employee.emailProfessionnel
+              }
+              fieldKey="emailProfessionnel"
+              isEditing={coordEdit.isEditing}
+              onChange={coordEdit.updateField}
+              type="email"
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -202,18 +242,18 @@ export function TabEmergency({ employee }: TabEmergencyProps) {
               {currentContacts.map((contact, index) => (
                 <div
                   key={`${contact.nom}-${index}`}
-                  className="space-y-4 rounded-lg border border-border/40 p-4"
+                  className="space-y-4 rounded-lg border p-4"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold">{contact.nom || "Nouveau contact"}</span>
+                      <span className="text-sm font-semibold">
+                        {contact.nom || "Nouveau contact"}
+                      </span>
                     </div>
                     {contactsEditing && (
                       <Button
-                        variant="ghost"
-                        size="sm"
+                        variant="destructive"
                         onClick={() => removeContact(index)}
-                        className="h-7 gap-1 px-2 text-xs text-destructive hover:bg-destructive/5 hover:text-destructive"
                       >
                         <Trash2 className="h-3 w-3" />
                         Supprimer
@@ -223,70 +263,57 @@ export function TabEmergency({ employee }: TabEmergencyProps) {
 
                   <div className="space-y-4">
                     <div className="flex flex-col gap-1.5">
-                      <p className="text-xs">Nom complet</p>
-                      <div className="relative">
-                        <Input
-                          value={contact.nom}
-                          placeholder="Nom complet"
-                          onChange={(e) => updateContact(index, "nom", e.target.value)}
-                          disabled={!contactsEditing}
-                          className={cn(
-                            "h-9 border-border/40 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0",
-                            !contactsEditing && "cursor-default border-border/20 bg-background font-medium opacity-100"
-                          )}
-                        />
-                        {!contactsEditing && (
-                          <div className="absolute inset-0 z-10 cursor-default" />
-                        )}
-                      </div>
+                      <Label>Nom complet</Label>
+                      <Input
+                        value={contact.nom}
+                        placeholder="Nom complet"
+                        onChange={(e) =>
+                          updateContact(index, "nom", e.target.value)
+                        }
+                        disabled={!contactsEditing}
+                      />
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <p className="text-xs">Lien / Relation</p>
-                      {contactsEditing ? (
-                        <Select
-                          value={contact.relation}
-                          onValueChange={(v) => updateContact(index, "relation", v)}
+                      <Label>Lien / Relation</Label>
+                      <Select
+                        value={contact.relation}
+                        onValueChange={(v) =>
+                          updateContact(index, "relation", v)
+                        }
+                      >
+                        <SelectTrigger
+                          className="relative w-full"
+                          disabled={!contactsEditing}
                         >
-                          <SelectTrigger className="h-9 border-border/40 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {RELATION_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value} className="text-xs">
-                                {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <div className="flex items-center justify-between rounded-md border border-border/20 bg-background p-2.5">
-                          <span className="text-xs font-medium">{contact.relation}</span>
-                          <Badge variant="outline" className="h-5 text-[10px] border-border/40">
-                            Urgence
-                          </Badge>
-                        </div>
-                      )}
+                          <SelectValue placeholder="Relation" />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          {RELATION_OPTIONS.map((opt) => (
+                            <SelectItem
+                              key={opt.value}
+                              value={opt.value}
+                              className="text-xs"
+                            >
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <p className="text-xs">Téléphone</p>
-                      <div className="relative">
-                        <Input
-                          value={contact.telephone}
-                          placeholder="Téléphone"
-                          type="tel"
-                          onChange={(e) => updateContact(index, "telephone", e.target.value)}
-                          disabled={!contactsEditing}
-                          className={cn(
-                            "h-9 border-border/40 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0",
-                            !contactsEditing && "cursor-default border-border/20 bg-background font-medium opacity-100"
-                          )}
-                        />
-                        {!contactsEditing && (
-                          <div className="absolute inset-0 z-10 cursor-default" />
-                        )}
-                      </div>
+                      <Label>Téléphone</Label>
+                      <Input
+                        value={contact.telephone}
+                        placeholder="Téléphone"
+                        type="tel"
+                        onChange={(e) =>
+                          updateContact(index, "telephone", e.target.value)
+                        }
+                        disabled={!contactsEditing}
+                      />
                     </div>
                   </div>
                 </div>

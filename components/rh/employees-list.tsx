@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Calendar,
   X,
+  Plus,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -579,14 +580,17 @@ export function EmployeesList() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button className="h-10 px-4 shadow-none" asChild>
-            <Link href="/rh/employees/new">Nouveau Collaborateur</Link>
-          </Button>
+          <Link href="/rh/employees/new">
+            <Button>
+              <Plus />
+              Nouveau Collaborateur
+            </Button>
+          </Link>
         </div>
       </div>
 
       {/* Table Section */}
-      <ScrollArea className="h-[calc(100vh-415px)] overflow-hidden rounded-md border">
+      <ScrollArea className="h-[calc(100vh-400px)] overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
@@ -637,13 +641,13 @@ export function EmployeesList() {
               >
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-16 w-16 rounded border">
+                    <Avatar className="h-16 w-16 overflow-hidden rounded after:rounded">
                       <AvatarImage
                         src={employee.avatar}
                         alt={employee.name}
-                        className="rounded"
+                        className="h-full w-full rounded-none"
                       />
-                      <AvatarFallback className="bg-muted text-xs font-medium text-muted-foreground">
+                      <AvatarFallback className="h-full w-full rounded">
                         {employee.name
                           .split(" ")
                           .map((n) => n[0])
@@ -719,8 +723,6 @@ export function EmployeesList() {
                 <TableCell>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="h-8"
                     onClick={(e) => {
                       e.stopPropagation()
                     }}

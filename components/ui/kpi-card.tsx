@@ -5,9 +5,11 @@ export interface KpiSegment {
   readonly id: string
   readonly value: number
   readonly label: string
-  readonly colorClass: string
+  readonly colorClass?: string
   readonly percentage?: number
 }
+
+const KPI_COLORS = ["#6366f1", "#2fb6d4", "#ef4445"]
 
 export interface KpiCardProps extends React.HTMLAttributes<HTMLDivElement> {
   readonly mainValue: React.ReactNode
@@ -44,6 +46,19 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
             : "flex-col items-start justify-center"
         )}
       >
+        {mainValueLabel && (
+          <span
+            className={cn(
+              "",
+              inlineLabel
+                ? "text-sm text-muted-foreground"
+                : "mb-0.5 text-sm text-muted-foreground"
+            )}
+          >
+            {mainValueLabel}
+          </span>
+        )}
+
         <span
           className={cn(
             "font-bold tracking-tight text-foreground",
@@ -52,35 +67,23 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
         >
           {mainValue}
         </span>
-        {mainValueLabel && (
-          <span
-            className={cn(
-              "font-medium",
-              inlineLabel
-                ? "text-sm text-muted-foreground"
-                : "mt-0.5 text-[13px] tracking-tight text-muted-foreground/60"
-            )}
-          >
-            {mainValueLabel}
-          </span>
-        )}
       </div>
 
       {hasSegments && (
-        <div className="mt-4 flex w-full flex-col gap-3">
-          <div className="flex h-1.5 w-full overflow-hidden rounded-full bg-muted/40 gap-0.5">
-            {segments?.map((segment) => {
+        <div className="mt-3 flex w-full flex-col gap-3">
+          <div className="flex h-1.5 w-full gap-0.5 overflow-hidden rounded-full bg-muted/40">
+            {segments?.map((segment, index) => {
               const widthPerc = total > 0 ? (segment.value / total) * 100 : 0
               return (
                 <div
                   key={segment.id}
                   className={cn(
-                    "h-full transition-all duration-500",
-                    segment.colorClass
+                    "h-full transition-all duration-500"
                   )}
                   style={{
                     width: `${widthPerc}%`,
                     minWidth: widthPerc > 0 ? "2px" : "0",
+                    backgroundColor: KPI_COLORS[index % KPI_COLORS.length],
                   }}
                 />
               )
@@ -88,20 +91,22 @@ export function KpiCard(props: Readonly<KpiCardProps>) {
           </div>
 
           <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-1.5 text-[11px] font-semibold text-muted-foreground">
-            {segments?.map((segment) => (
+            {segments?.map((segment, index) => (
               <div
                 key={segment.id}
                 className="flex shrink-0 items-center gap-1.5 whitespace-nowrap"
               >
                 <div
                   className={cn(
-                    "h-1.5 w-1.5 shrink-0 rounded-full",
-                    segment.colorClass
+                    "h-1.5 w-1.5 shrink-0 rounded-full"
                   )}
+                  style={{ backgroundColor: KPI_COLORS[index % KPI_COLORS.length] }}
                 />
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-1">
                   <span className="text-foreground">{segment.value}</span>
-                  <span className="text-[10px] opacity-60 font-normal">{segment.label}</span>
+                  <span className="text-[10px] font-normal opacity-60">
+                    {segment.label}
+                  </span>
                 </div>
               </div>
             ))}

@@ -7,15 +7,12 @@ import {
   Download,
   Maximize2,
   Minimize2,
-  Building2,
   Layers,
-  ArrowRight,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { KpiCard } from "@/components/ui/kpi-card"
 import { cn } from "@/lib/utils"
 
 // --- Types ---
@@ -93,94 +90,101 @@ const orgData: OrgNode = {
   ],
 }
 
-function OrgCard({ node, isSelected }: { readonly node: OrgNode; readonly isSelected?: boolean }) {
-  const getLevelStyles = (level: number) => {
-    switch (level) {
-      case 0: return "border-primary bg-primary/5 ring-4 ring-primary/10 shadow-lg shadow-primary/5"
-      case 1: return "border-blue-200 bg-blue-50/30"
-      default: return "border-border bg-card"
-    }
-  }
-
-  const getRoleBadge = (level: number) => {
-    switch (level) {
-      case 0: return "bg-primary text-primary-foreground"
-      case 1: return "bg-blue-100 text-blue-700"
-      default: return "bg-muted text-muted-foreground"
-    }
-  }
-
-  const getLevelColor = (level: number) => {
-    if (level === 0) return "bg-primary"
-    if (level === 1) return "bg-blue-500"
-    return "bg-muted-foreground/30"
-  }
+function OrgCard({ node }: { readonly node: OrgNode }) {
+  const isRootLevel = node.level <= 1
 
   return (
-    <div className={cn(
-      "relative group flex flex-col items-center border rounded-2xl p-4 transition-all duration-300 w-[200px] hover:-translate-y-1 hover:shadow-xl",
-      getLevelStyles(node.level),
-      isSelected && "ring-2 ring-orange-500 border-orange-500 scale-105 z-20"
-    )}>
-      {/* level indicator dot */}
-      <div className={cn("absolute -top-1.5 h-3 w-3 rounded-full border-2 border-background", getLevelColor(node.level))} />
-      
-      <Avatar className={cn(
-        "h-14 w-14 border-2 border-background shadow-sm mb-3 transition-transform duration-300 group-hover:scale-110",
-        node.level === 0 && "h-16 w-16"
-      )}>
+    <div
+      className={cn(
+        "flex max-w-[280px] min-w-[240px] items-center gap-3 rounded-xl border p-3 pr-6 shadow-sm transition-all duration-300 hover:shadow-md",
+        isRootLevel ? "border-[#7CB8FF] bg-[#E6F3FF]" : "border-border bg-card"
+      )}
+    >
+      <Avatar className="h-10 w-10 border border-background shadow-xs">
         <AvatarImage src={node.avatar} alt={node.name} />
-        <AvatarFallback className="text-lg font-bold">{node.name.split(" ").map(n => n[0]).join("")}</AvatarFallback>
+        <AvatarFallback>{node.name.charAt(0)}</AvatarFallback>
       </Avatar>
 
-      <div className="text-center w-full">
-        <h4 className="text-sm font-bold text-foreground truncate px-1">{node.name}</h4>
-        <div className={cn(
-          "mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider",
-          getRoleBadge(node.level)
-        )}>
+      <div className="flex flex-col text-left">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-foreground/90">
+            {node.name}
+          </span>
+        </div>
+        <span className="mt-0.5 text-xs font-medium text-muted-foreground">
           {node.role}
-        </div>
-        
-        <div className="mt-3 flex items-center justify-between border-t border-border/40 pt-2 px-1">
-          <div className="flex items-center gap-1.5">
-            <Building2 className="h-3 w-3 text-muted-foreground/60" />
-            <span className="text-[10px] font-medium text-muted-foreground line-clamp-1">{node.department}</span>
-          </div>
-          <ArrowRight className="h-3 w-3 text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </div>
+        </span>
       </div>
     </div>
   )
 }
 
-function OrgTree({ node, searchTerm }: { readonly node: OrgNode; readonly searchTerm: string }) {
-  const isMatch = searchTerm && (
-    node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    node.role.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+function OrgTree({
+  node,
+  searchTerm,
+}: {
+  readonly node: OrgNode
+  readonly searchTerm: string
+}) {
+  const hasChildren = node.children && node.children.length > 0
+  const isMatch =
+    searchTerm &&
+    (node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      node.role.toLowerCase().includes(searchTerm.toLowerCase()))
 
   return (
-    <div className="flex flex-col items-center">
-      <OrgCard node={node} isSelected={!!isMatch} />
-      
-      {node.children && node.children.length > 0 && (
-        <div className="relative pt-10 flex items-start gap-4">
-          {/* Vertical line from parent */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-10 bg-linear-to-b from-border to-border/40" />
-          
-          {/* Horizontal connecting line wrapping */}
-          {node.children.length > 1 && (
-            <div className="absolute top-10 left-[100px] right-[100px] h-px bg-border/40" />
+    <div className="flex items-start">
+      {/* Node Container */}
+      <div className="group relative shrink-0">
+        <div
+          className={cn(
+            "transition-all duration-300",
+            isMatch && "rounded-xl ring-2 ring-primary ring-offset-2"
           )}
+        >
+          <OrgCard node={node} />
+        </div>
 
-          {node.children.map((child) => (
-            <div key={child.id} className="relative pt-0">
-              {/* Vertical line to child */}
-              <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-px h-10 bg-border/40" />
-              <OrgTree node={child} searchTerm={searchTerm} />
-            </div>
-          ))}
+        {hasChildren && (
+          <>
+            <div className="absolute top-[32px] right-[-4px] z-20 h-2 w-2 -translate-y-1/2 rounded-full border-[1.5px] border-[#7CB8FF] bg-white" />
+            <div className="absolute top-[32px] right-[-2rem] z-0 h-[1.5px] w-[2rem] bg-[#7CB8FF]" />
+          </>
+        )}
+      </div>
+
+      {hasChildren && (
+        <div className="relative flex flex-col gap-4 pl-8">
+          {node.children!.map((child, idx) => {
+            const isFirst = idx === 0
+            const isLast = idx === node.children!.length - 1
+            const isOnly = node.children!.length === 1
+
+            return (
+              <div key={child.id} className="relative flex items-start">
+                {isFirst && !isOnly && (
+                  <div className="absolute top-[32px] bottom-[-1rem] left-[-2rem] w-[1.5px] bg-[#7CB8FF]" />
+                )}
+
+                {!isFirst && !isLast && (
+                  <>
+                    <div className="absolute top-[-1rem] bottom-[-1rem] left-[-2rem] w-[1.5px] bg-[#7CB8FF]" />
+                    <div className="absolute top-[32px] left-[-2rem] h-[1.5px] w-[2rem] bg-[#7CB8FF]" />
+                    <div className="absolute top-[32px] left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#7CB8FF]" />
+                  </>
+                )}
+
+                {!isFirst && isLast && (
+                  <div className="absolute top-[-1rem] left-[-2rem] h-[3rem] w-[2rem] rounded-bl-xl border-b-[1.5px] border-l-[1.5px] border-[#7CB8FF]" />
+                )}
+                {!isFirst && isLast && (
+                  <div className="absolute top-[32px] left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[#7CB8FF]" />
+                )}
+
+                <OrgTree node={child} searchTerm={searchTerm} />
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
@@ -191,117 +195,69 @@ export function OrgChart() {
   const [searchTerm, setSearchTerm] = useState("")
   const [zoom, setZoom] = useState(85)
 
-  const kpis = [
-    {
-      label: "Effectif Total",
-      value: "45",
-      segments: [
-        { id: "h", label: "Hommes", value: 25, colorClass: "bg-blue-500" },
-        { id: "f", label: "Femmes", value: 20, colorClass: "bg-pink-400" },
-      ],
-    },
-    {
-      label: "Équipes",
-      value: "12",
-      segments: [
-        { id: "ops", label: "Operations", value: 50, colorClass: "bg-indigo-500" },
-        { id: "admin", label: "Admin", value: 50, colorClass: "bg-amber-400" },
-      ],
-    },
-    {
-      label: "Niveaux de Hiérarchie",
-      value: "04",
-      segments: [
-        { id: "dir", label: "Direction", value: 25, colorClass: "bg-primary" },
-        { id: "emp", label: "Staff", value: 75, colorClass: "bg-primary/10" },
-      ],
-    },
-  ]
-
   return (
-    <div className="flex flex-col h-full w-full min-w-0 overflow-hidden space-y-0">
-      {/* KPI Section */}
-      <div className="grid gap-4 md:grid-cols-3 mb-6">
-        {kpis.map((kpi) => (
-          <KpiCard
-            key={kpi.label}
-            mainValue={kpi.value}
-            mainValueLabel={kpi.label}
-            segments={kpi.segments}
-          />
-        ))}
-      </div>
-
+    <div className="flex w-full min-w-0 flex-col">
       {/* Toolbar - Modern Glass Look */}
-      <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between px-1">
+      <div className="flex flex-col gap-4 px-1 pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="relative group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <div className="group relative">
+            <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Rechercher un talent..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="h-11 w-full sm:w-[280px] md:w-[360px] pl-10 bg-background/50 border-border/60 hover:border-border transition-all focus:ring-primary/20"
+              className="w-[360px] pl-10"
             />
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 border rounded-xl p-1 bg-muted/30">
-            <Button variant="ghost" size="icon" onClick={() => setZoom(Math.max(50, zoom - 10))} className="h-9 w-9 rounded-lg hover:bg-background">
+          <div className="flex items-center gap-1 rounded-md bg-muted p-0.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setZoom(Math.max(50, zoom - 10))}
+            >
               <Minimize2 className="h-4 w-4" />
             </Button>
             <div className="px-2">
-              <span className="text-[11px] font-bold text-muted-foreground tabular-nums">{zoom}%</span>
+              <span className="text-sm font-medium text-muted-foreground tabular-nums">
+                {zoom}%
+              </span>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setZoom(Math.min(150, zoom + 10))} className="h-9 w-9 rounded-lg hover:bg-background">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setZoom(Math.min(150, zoom + 10))}
+            >
               <Maximize2 className="h-4 w-4" />
             </Button>
           </div>
-          <Button variant="outline" className="h-11 px-4 gap-2 rounded-xl">
+          <Button variant="outline">
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Exporter</span>
+            Exporter
           </Button>
-          <Button className="h-11 px-6 bg-primary gap-2 rounded-xl shadow-lg shadow-primary/20">
+          <Button>
             <Network className="h-4 w-4" />
-            <span className="hidden sm:inline">Vue Complète</span>
+            Vue Complète
           </Button>
         </div>
       </div>
 
       {/* Org Chart Drawing Area */}
-      <div className="flex-1 min-h-0 h-[calc(100vh-435px)] rounded-3xl border border-border/50 bg-[#FBFBFC] dark:bg-muted/10 relative overflow-auto shadow-inner">
+      <div className="relative h-[calc(100vh-150px)] overflow-auto rounded-3xl border shadow-inner">
         {/* Background Grid Pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[24px_24px] opacity-40 pointer-events-none" />
-        
-        <div 
-          className="inline-block min-w-full p-20 transition-all duration-500 ease-out text-center"
-          style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(gray_1px,transparent_1px)] bg-size-[24px_24px] opacity-40" />
+
+        <div
+          className="inline-block min-w-max p-20 transition-all duration-500 ease-out"
+          style={{
+            transform: `scale(${zoom / 100})`,
+            transformOrigin: "top left",
+          }}
         >
-          <div className="inline-flex flex-col items-center">
+          <div className="inline-flex">
             <OrgTree node={orgData} searchTerm={searchTerm} />
           </div>
-        </div>
-      </div>
-
-      {/* Modern Legend Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between pt-5 gap-4">
-        <div className="flex items-center gap-5 p-1.5 px-4 rounded-full bg-muted/20 border border-border/40 backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Direction</span>
-          </div>
-          <div className="flex items-center gap-2 border-l border-border/40 pl-5">
-            <div className="h-2.5 w-2.5 rounded-full bg-blue-500" />
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Managers</span>
-          </div>
-          <div className="flex items-center gap-2 border-l border-border/40 pl-5">
-            <div className="h-2.5 w-2.5 rounded-full bg-muted-foreground/30" />
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Collaborateurs</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-[10px] font-medium text-muted-foreground/60 bg-muted/10 px-3 py-1 rounded-md">
-          <Layers className="h-3 w-3" />
-          <span>Calcul de la structure en cours...</span>
         </div>
       </div>
     </div>
