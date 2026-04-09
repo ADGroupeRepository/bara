@@ -3,11 +3,7 @@
 import { Pencil, X, Check } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
+import { CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 type EditableCardHeaderProps = {
   readonly title: string
@@ -42,31 +38,17 @@ export function EditableCardHeader({
         {children}
         {isEditing ? (
           <>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onCancel}
-              className="gap-1.5 text-muted-foreground hover:text-foreground"
-            >
+            <Button variant="outline" onClick={onCancel}>
               <X className="h-3.5 w-3.5" />
               Annuler
             </Button>
-            <Button
-              size="sm"
-              onClick={onSave}
-              className="gap-1.5"
-            >
+            <Button onClick={onSave}>
               <Check className="h-3.5 w-3.5" />
               Enregistrer
             </Button>
           </>
         ) : (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onEdit}
-            className="gap-1.5 border-border text-foreground hover:bg-muted"
-          >
+          <Button variant="outline" onClick={onEdit}>
             <Pencil className="h-3.5 w-3.5" />
             Modifier
           </Button>

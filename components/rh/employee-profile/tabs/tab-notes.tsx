@@ -16,6 +16,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   Drawer,
   DrawerClose,
   DrawerContent,
@@ -31,6 +39,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Label } from "@/components/ui/label"
+import { Icons } from "@/components/layout/sidebar/icons"
+import { Pencil } from "lucide-react"
 
 import type {
   EmployeeProfile,
@@ -86,8 +97,7 @@ export function TabNotes({ employee }: TabNotesProps) {
     notesInternes: employee.notesInternes,
   })
 
-  // Academic editing
-  const [academicEditing, setAcademicEditing] = useState(false)
+  // Academic state
   const [editableAcademic, setEditableAcademic] = useState<
     ParcoursAcademique[]
   >(() =>
@@ -95,15 +105,118 @@ export function TabNotes({ employee }: TabNotesProps) {
       ? structuredClone(employee.parcoursAcademique)
       : []
   )
+  const [academicDialogOpen, setAcademicDialogOpen] = useState(false)
+  const [academicDialogMode, setAcademicDialogMode] = useState<"add" | "edit">("add")
+  const [academicEditIndex, setAcademicEditIndex] = useState<number | null>(null)
+  const [academicFormData, setAcademicFormData] = useState<ParcoursAcademique>({
+    id: "",
+    diplome: "",
+    etablissement: "",
+    domaine: "",
+    dateDebut: "",
+    dateFin: "",
+    statut: "En cours",
+  })
 
-  // Experience editing
-  const [expEditing, setExpEditing] = useState(false)
+  // Experience state
   const [editableExp, setEditableExp] = useState<ExperienceProfessionnelle[]>(
     () =>
       employee.experiencesProfessionnelles
         ? structuredClone(employee.experiencesProfessionnelles)
         : []
   )
+  const [expDialogOpen, setExpDialogOpen] = useState(false)
+  const [expDialogMode, setExpDialogMode] = useState<"add" | "edit">("add")
+  const [expEditIndex, setExpEditIndex] = useState<number | null>(null)
+  const [expFormData, setExpFormData] = useState<ExperienceProfessionnelle>({
+    id: "",
+    poste: "",
+    employeur: "",
+    lieu: "",
+    dateDebut: "",
+    dateFin: "",
+    description: "",
+  })
+
+  // Academic dialog helpers
+  const openAcademicAdd = () => {
+    setAcademicDialogMode("add")
+    setAcademicEditIndex(null)
+    setAcademicFormData({
+      id: Math.random().toString(36).substring(2, 9),
+      diplome: "",
+      etablissement: "",
+      domaine: "",
+      dateDebut: "",
+      dateFin: "",
+      statut: "En cours",
+    })
+    setAcademicDialogOpen(true)
+  }
+
+  const openAcademicEdit = (index: number) => {
+    setAcademicDialogMode("edit")
+    setAcademicEditIndex(index)
+    setAcademicFormData(structuredClone(editableAcademic[index]))
+    setAcademicDialogOpen(true)
+  }
+
+  const saveAcademicDialog = () => {
+    if (academicDialogMode === "add") {
+      setEditableAcademic((prev) => [...prev, academicFormData])
+    } else if (academicEditIndex !== null) {
+      setEditableAcademic((prev) => {
+        const updated = [...prev]
+        updated[academicEditIndex] = academicFormData
+        return updated
+      })
+    }
+    setAcademicDialogOpen(false)
+  }
+
+  const deleteAcademic = (index: number) => {
+    setEditableAcademic((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  // Experience dialog helpers
+  const openExpAdd = () => {
+    setExpDialogMode("add")
+    setExpEditIndex(null)
+    setExpFormData({
+      id: Math.random().toString(36).substring(2, 9),
+      poste: "",
+      employeur: "",
+      lieu: "",
+      dateDebut: "",
+      dateFin: "",
+      description: "",
+    })
+    setExpDialogOpen(true)
+  }
+
+  const openExpEdit = (index: number) => {
+    setExpDialogMode("edit")
+    setExpEditIndex(index)
+    setExpFormData(structuredClone(editableExp[index]))
+    setExpDialogOpen(true)
+  }
+
+  const saveExpDialog = () => {
+    if (expDialogMode === "add") {
+      setEditableExp((prev) => [...prev, expFormData])
+    } else if (expEditIndex !== null) {
+      setEditableExp((prev) => {
+        const updated = [...prev]
+        updated[expEditIndex] = expFormData
+        return updated
+      })
+    }
+    setExpDialogOpen(false)
+  }
+
+  const deleteExp = (index: number) => {
+    setEditableExp((prev) => prev.filter((_, i) => i !== index))
+  }
 
   // Skills editing
   const [skillsEditing, setSkillsEditing] = useState(false)
@@ -319,30 +432,29 @@ export function TabNotes({ employee }: TabNotesProps) {
 
         {/* Parcours Académique */}
         <Card className="border-border bg-card shadow-none lg:col-span-2">
-          <EditableCardHeader
-            title="Parcours Académique"
-            description="Historique des formations et diplômes obtenus"
-            isEditing={academicEditing}
-            onEdit={() => {
-              setEditableAcademic(structuredClone(employee.parcoursAcademique))
-              setAcademicEditing(true)
-            }}
-            onCancel={() => {
-              setEditableAcademic(structuredClone(employee.parcoursAcademique))
-              setAcademicEditing(false)
-            }}
-            onSave={() => setAcademicEditing(false)}
-          >
-            {!academicEditing && (
-              <Badge
-                variant="secondary"
-                className="hidden shrink-0 bg-muted text-muted-foreground sm:inline-flex"
-              >
-                Niveau actuel : {employee.niveauEtudes}
-              </Badge>
-            )}
-          </EditableCardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-foreground">Parcours Académique</h3>
+                <p className="text-sm text-muted-foreground">Historique des formations et diplômes obtenus</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge
+                  variant="secondary"
+                  className="hidden shrink-0 bg-muted text-muted-foreground sm:inline-flex"
+                >
+                  Niveau actuel : {employee.niveauEtudes}
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={openAcademicAdd}
+                  className="text-xs font-semibold"
+                >
+                  Ajouter
+                </Button>
+              </div>
+            </div>
             <div className="overflow-hidden rounded-md border border-border bg-background">
               <Table>
                 <TableHeader>
@@ -360,189 +472,59 @@ export function TabNotes({ employee }: TabNotesProps) {
                       Statut
                     </TableHead>
                     <TableHead className="w-[10%] pr-4 text-right font-semibold text-foreground">
-                      {academicEditing ? "Actions" : "Documents"}
+                      Actions
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {(academicEditing
-                    ? editableAcademic
-                    : employee.parcoursAcademique
-                  )?.length > 0 ? (
-                    (academicEditing
-                      ? editableAcademic
-                      : employee.parcoursAcademique
-                    ).map((parcours, index) => (
+                  {editableAcademic.length > 0 ? (
+                    editableAcademic.map((parcours, index) => (
                       <TableRow
                         key={parcours.id}
-                        className="border-border transition-colors hover:bg-muted/30"
+                        className="border-border cursor-pointer transition-colors hover:bg-muted/30"
+                        onClick={() => openAcademicEdit(index)}
                       >
                         <TableCell>
-                          {academicEditing ? (
-                            <div className="space-y-1">
-                              <Input
-                                value={parcours.diplome}
-                                onChange={(e) => {
-                                  const updated = [...editableAcademic]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    diplome: e.target.value,
-                                  }
-                                  setEditableAcademic(updated)
-                                }}
-                                className="h-7 border-border/60 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                placeholder="Diplôme"
-                              />
-                              <Input
-                                value={parcours.domaine}
-                                onChange={(e) => {
-                                  const updated = [...editableAcademic]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    domaine: e.target.value,
-                                  }
-                                  setEditableAcademic(updated)
-                                }}
-                                className="h-7 border-border/60 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                placeholder="Domaine"
-                              />
-                            </div>
-                          ) : (
-                            <>
-                              <div className="text-sm font-medium text-foreground">
-                                {parcours.diplome}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {parcours.domaine}
-                              </div>
-                            </>
-                          )}
+                          <div className="text-sm font-medium text-foreground">
+                            {parcours.diplome}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {parcours.domaine}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          {academicEditing ? (
-                            <Input
-                              value={parcours.etablissement}
-                              onChange={(e) => {
-                                const updated = [...editableAcademic]
-                                updated[index] = {
-                                  ...updated[index],
-                                  etablissement: e.target.value,
-                                }
-                                setEditableAcademic(updated)
-                              }}
-                              className="h-7 border-border/60 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                            />
-                          ) : (
-                            <span className="text-sm text-foreground">
-                              {parcours.etablissement}
-                            </span>
-                          )}
+                          <span className="text-sm text-foreground">
+                            {parcours.etablissement}
+                          </span>
                         </TableCell>
                         <TableCell>
-                          {academicEditing ? (
-                            <div className="flex items-center gap-1">
-                              <Input
-                                value={parcours.dateDebut}
-                                onChange={(e) => {
-                                  const updated = [...editableAcademic]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    dateDebut: e.target.value,
-                                  }
-                                  setEditableAcademic(updated)
-                                }}
-                                className="h-7 w-16 border-border/60 bg-background text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                placeholder="Début"
-                              />
-                              <span className="text-muted-foreground">-</span>
-                              <Input
-                                value={parcours.dateFin}
-                                onChange={(e) => {
-                                  const updated = [...editableAcademic]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    dateFin: e.target.value,
-                                  }
-                                  setEditableAcademic(updated)
-                                }}
-                                className="h-7 w-16 border-border/60 bg-background text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                placeholder="Fin"
-                              />
-                            </div>
-                          ) : (
-                            <span className="text-sm whitespace-nowrap text-muted-foreground">
-                              {parcours.dateDebut} - {parcours.dateFin}
-                            </span>
-                          )}
+                          <span className="text-sm whitespace-nowrap text-muted-foreground">
+                            {parcours.dateDebut} - {parcours.dateFin}
+                          </span>
                         </TableCell>
                         <TableCell>
-                          {academicEditing ? (
-                            <Select
-                              value={parcours.statut}
-                              onValueChange={(v) => {
-                                const updated = [...editableAcademic]
-                                updated[index] = {
-                                  ...updated[index],
-                                  statut: v as ParcoursAcademique["statut"],
-                                }
-                                setEditableAcademic(updated)
-                              }}
-                            >
-                              <SelectTrigger className="h-7 border-border/60 bg-background text-xs shadow-none focus:ring-0">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {STATUT_DIPLOME_OPTIONS.map((opt) => (
-                                  <SelectItem
-                                    key={opt.value}
-                                    value={opt.value}
-                                    className="text-xs"
-                                  >
-                                    {opt.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <Badge
-                              variant={
-                                parcours.statut === "Obtenu"
-                                  ? "secondary"
-                                  : "outline"
-                              }
-                              className={
-                                parcours.statut === "Obtenu"
-                                  ? "border-none bg-emerald-50 text-emerald-600"
-                                  : "border-border text-muted-foreground"
-                              }
-                            >
-                              {parcours.statut}
-                            </Badge>
-                          )}
+                          <Badge
+                            variant={
+                              parcours.statut === "Obtenu"
+                                ? "secondary"
+                                : "outline"
+                            }
+                            className={
+                              parcours.statut === "Obtenu"
+                                ? "border-none bg-emerald-50 text-emerald-600"
+                                : "border-border text-muted-foreground"
+                            }
+                          >
+                            {parcours.statut}
+                          </Badge>
                         </TableCell>
-                        <TableCell className="pr-4 text-right">
-                          {academicEditing ? (
-                            <Button
-                              variant="ghost"
-                              className="h-8 px-2 text-[10px] font-bold text-muted-foreground transition-all hover:bg-destructive/5 hover:text-destructive uppercase"
-                              onClick={() => {
-                                setEditableAcademic((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                )
-                              }}
-                            >
-                              Supprimer
-                            </Button>
-                          ) : parcours.documentUrl ? (
-                            <div className="flex items-center justify-end gap-3">
+                        <TableCell className="pr-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-2">
+                            {parcours.documentUrl && (
                               <Drawer>
                                 <DrawerTrigger asChild>
-                                  <Button
-                                    variant="link"
-                                    size="sm"
-                                    className="h-8 px-0 text-[10px] font-bold text-muted-foreground transition-colors hover:text-primary uppercase"
-                                  >
-                                    Voir
+                                  <Button variant="secondary" size="icon">
+                                    <Icons.Eye className="size-4" />
                                   </Button>
                                 </DrawerTrigger>
                                 <DrawerContent className="h-full" hideHandle>
@@ -572,15 +554,23 @@ export function TabNotes({ employee }: TabNotesProps) {
                                   </div>
                                 </DrawerContent>
                               </Drawer>
-                              <Button
-                                variant="link"
-                                size="sm"
-                                className="h-8 px-0 text-[10px] font-bold text-muted-foreground transition-colors hover:text-primary uppercase"
-                              >
-                                Télécharger
-                              </Button>
-                            </div>
-                          ) : null}
+                            )}
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              onClick={() => openAcademicEdit(index)}
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              className="hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => deleteAcademic(index)}
+                            >
+                              <Icons.Trash className="size-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -597,228 +587,204 @@ export function TabNotes({ employee }: TabNotesProps) {
                 </TableBody>
               </Table>
             </div>
-            {academicEditing && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setEditableAcademic((prev) => [
-                    ...prev,
-                    {
-                      id: Math.random().toString(36).substring(2, 9),
-                      diplome: "",
-                      etablissement: "",
-                      domaine: "",
-                      dateDebut: "",
-                      dateFin: "",
-                      statut: "En cours" as const,
-                    },
-                  ])
-                }}
-                className="mt-4 w-full text-xs font-semibold hover:bg-muted"
-              >
-                Ajouter un diplôme
-              </Button>
-            )}
           </CardContent>
         </Card>
 
+        {/* Dialog Parcours Académique */}
+        <Dialog open={academicDialogOpen} onOpenChange={setAcademicDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>
+                {academicDialogMode === "add" ? "Ajouter un diplôme" : "Modifier le diplôme"}
+              </DialogTitle>
+              <DialogDescription>
+                {academicDialogMode === "add"
+                  ? "Renseignez les informations du nouveau diplôme."
+                  : "Modifiez les informations du diplôme sélectionné."}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-xs">Diplôme / Formation</Label>
+                <Input
+                  value={academicFormData.diplome}
+                  onChange={(e) =>
+                    setAcademicFormData((prev) => ({ ...prev, diplome: e.target.value }))
+                  }
+                  placeholder="Ex: Master en Management"
+                  className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Domaine</Label>
+                <Input
+                  value={academicFormData.domaine}
+                  onChange={(e) =>
+                    setAcademicFormData((prev) => ({ ...prev, domaine: e.target.value }))
+                  }
+                  placeholder="Ex: Management"
+                  className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Établissement</Label>
+                <Input
+                  value={academicFormData.etablissement}
+                  onChange={(e) =>
+                    setAcademicFormData((prev) => ({ ...prev, etablissement: e.target.value }))
+                  }
+                  placeholder="Ex: CESAG - Dakar"
+                  className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs">Année de début</Label>
+                  <Input
+                    value={academicFormData.dateDebut}
+                    onChange={(e) =>
+                      setAcademicFormData((prev) => ({ ...prev, dateDebut: e.target.value }))
+                    }
+                    placeholder="Ex: 2008"
+                    className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Année de fin</Label>
+                  <Input
+                    value={academicFormData.dateFin}
+                    onChange={(e) =>
+                      setAcademicFormData((prev) => ({ ...prev, dateFin: e.target.value }))
+                    }
+                    placeholder="Ex: 2010"
+                    className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Statut</Label>
+                <Select
+                  value={academicFormData.statut}
+                  onValueChange={(v) =>
+                    setAcademicFormData((prev) => ({
+                      ...prev,
+                      statut: v as ParcoursAcademique["statut"],
+                    }))
+                  }
+                >
+                  <SelectTrigger className="h-9 border-border bg-background text-sm shadow-none focus:ring-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATUT_DIPLOME_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setAcademicDialogOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button onClick={saveAcademicDialog}>
+                {academicDialogMode === "add" ? "Ajouter" : "Enregistrer"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Expériences Professionnelles */}
         <Card className="border-border bg-card shadow-none lg:col-span-2">
-          <EditableCardHeader
-            title="Expériences Professionnelles"
-            description="Historique du parcours professionnel"
-            isEditing={expEditing}
-            onEdit={() => {
-              setEditableExp(
-                structuredClone(employee.experiencesProfessionnelles)
-              )
-              setExpEditing(true)
-            }}
-            onCancel={() => {
-              setEditableExp(
-                structuredClone(employee.experiencesProfessionnelles)
-              )
-              setExpEditing(false)
-            }}
-            onSave={() => setExpEditing(false)}
-          />
-          <CardContent>
+          <CardContent className="pt-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="space-y-1">
+                <h3 className="text-base font-semibold text-foreground">Expériences Professionnelles</h3>
+                <p className="text-sm text-muted-foreground">Historique du parcours professionnel</p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openExpAdd}
+                className="text-xs font-semibold"
+              >
+                Ajouter
+              </Button>
+            </div>
             <div className="overflow-hidden rounded-md border border-border bg-background">
               <Table>
                 <TableHeader>
                   <TableRow className="border-border bg-muted/50 hover:bg-muted/50">
-                    <TableHead className="w-[25%] font-semibold text-foreground">
+                    <TableHead className="w-[35%] font-semibold text-foreground">
                       Poste / Rôle
                     </TableHead>
-                    <TableHead className="w-[25%] font-semibold text-foreground">
+                    <TableHead className="w-[35%] font-semibold text-foreground">
                       Employeur
                     </TableHead>
                     <TableHead className="w-[20%] font-semibold text-foreground">
                       Période
                     </TableHead>
-                    <TableHead className="w-[25%] font-semibold text-foreground">
-                      {expEditing ? "Description" : "Aperçu des missions"}
+                    <TableHead className="w-[10%] pr-4 text-right font-semibold text-foreground">
+                      Actions
                     </TableHead>
-                    {expEditing && (
-                      <TableHead className="w-[5%] pr-4 text-right font-semibold text-foreground">
-                        Actions
-                      </TableHead>
-                    )}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {(expEditing
-                    ? editableExp
-                    : employee.experiencesProfessionnelles
-                  )?.length > 0 ? (
-                    (expEditing
-                      ? editableExp
-                      : employee.experiencesProfessionnelles
-                    ).map((exp, index) => (
+                  {editableExp.length > 0 ? (
+                    editableExp.map((exp, index) => (
                       <TableRow
                         key={exp.id}
-                        className="border-border transition-colors hover:bg-muted/30"
+                        className="border-border cursor-pointer transition-colors hover:bg-muted/30"
+                        onClick={() => openExpEdit(index)}
                       >
                         <TableCell className="align-top">
-                          {expEditing ? (
-                            <Input
-                              value={exp.poste}
-                              onChange={(e) => {
-                                const updated = [...editableExp]
-                                updated[index] = {
-                                  ...updated[index],
-                                  poste: e.target.value,
-                                }
-                                setEditableExp(updated)
-                              }}
-                              className="h-7 border-border/60 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                            />
-                          ) : (
-                            <div className="text-sm font-medium text-foreground">
-                              {exp.poste}
-                            </div>
-                          )}
+                          <div className="text-sm font-medium text-foreground">
+                            {exp.poste}
+                          </div>
                         </TableCell>
                         <TableCell className="align-top">
-                          {expEditing ? (
-                            <div className="space-y-1">
-                              <Input
-                                value={exp.employeur}
-                                onChange={(e) => {
-                                  const updated = [...editableExp]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    employeur: e.target.value,
-                                  }
-                                  setEditableExp(updated)
-                                }}
-                                className="h-7 border-border/60 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                placeholder="Employeur"
-                              />
-                              <Input
-                                value={exp.lieu}
-                                onChange={(e) => {
-                                  const updated = [...editableExp]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    lieu: e.target.value,
-                                  }
-                                  setEditableExp(updated)
-                                }}
-                                className="h-7 border-border/60 bg-background text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                placeholder="Lieu"
-                              />
-                            </div>
-                          ) : (
-                            <>
-                              <div className="text-sm text-foreground">
-                                {exp.employeur}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {exp.lieu}
-                              </div>
-                            </>
-                          )}
+                          <div className="text-sm text-foreground">
+                            {exp.employeur}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {exp.lieu}
+                          </div>
                         </TableCell>
                         <TableCell className="align-top">
-                          {expEditing ? (
-                            <div className="flex items-center gap-1">
-                              <Input
-                                value={exp.dateDebut}
-                                onChange={(e) => {
-                                  const updated = [...editableExp]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    dateDebut: e.target.value,
-                                  }
-                                  setEditableExp(updated)
-                                }}
-                                className="h-7 w-20 border-border/60 bg-background text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                              />
-                              <span className="text-muted-foreground">-</span>
-                              <Input
-                                value={exp.dateFin}
-                                onChange={(e) => {
-                                  const updated = [...editableExp]
-                                  updated[index] = {
-                                    ...updated[index],
-                                    dateFin: e.target.value,
-                                  }
-                                  setEditableExp(updated)
-                                }}
-                                className="h-7 w-20 border-border/60 bg-background text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                              />
-                            </div>
-                          ) : (
-                            <span className="text-sm whitespace-nowrap text-muted-foreground">
-                              {exp.dateDebut} - {exp.dateFin}
-                            </span>
-                          )}
+                          <span className="text-sm whitespace-nowrap text-muted-foreground">
+                            {exp.dateDebut} - {exp.dateFin}
+                          </span>
                         </TableCell>
-                        <TableCell className="align-top">
-                          {expEditing ? (
-                            <textarea
-                              value={exp.description}
-                              onChange={(e) => {
-                                const updated = [...editableExp]
-                                updated[index] = {
-                                  ...updated[index],
-                                  description: e.target.value,
-                                }
-                                setEditableExp(updated)
-                              }}
-                              rows={2}
-                              className="w-full min-w-0 rounded-md border border-border/60 bg-background px-2 py-1 text-xs outline-none focus-visible:border-primary focus-visible:ring-0"
-                            />
-                          ) : (
-                            <p className="line-clamp-2 text-sm text-muted-foreground">
-                              {exp.description}
-                            </p>
-                          )}
-                        </TableCell>
-                        {expEditing && (
-                          <TableCell className="pr-4 text-right align-top">
+                        <TableCell className="pr-4 text-right align-top" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-2">
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 px-2 text-[10px] font-bold text-muted-foreground transition-all hover:bg-destructive/5 hover:text-destructive uppercase"
-                              onClick={() => {
-                                setEditableExp((prev) =>
-                                  prev.filter((_, i) => i !== index)
-                                )
-                              }}
+                              variant="secondary"
+                              size="icon"
+                              onClick={() => openExpEdit(index)}
                             >
-                              Supprimer
+                              <Pencil className="size-4" />
                             </Button>
-                          </TableCell>
-                        )}
+                            <Button
+                              variant="secondary"
+                              size="icon"
+                              className="hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => deleteExp(index)}
+                            >
+                              <Icons.Trash className="size-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
                       <TableCell
-                        colSpan={expEditing ? 5 : 4}
+                        colSpan={4}
                         className="h-24 text-center text-muted-foreground italic"
                       >
                         Aucune expérience professionnelle enregistrée.
@@ -828,31 +794,108 @@ export function TabNotes({ employee }: TabNotesProps) {
                 </TableBody>
               </Table>
             </div>
-            {expEditing && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setEditableExp((prev) => [
-                    ...prev,
-                    {
-                      id: Math.random().toString(36).substring(2, 9),
-                      poste: "",
-                      employeur: "",
-                      lieu: "",
-                      dateDebut: "",
-                      dateFin: "",
-                      description: "",
-                    },
-                  ])
-                }}
-                className="mt-4 w-full text-xs font-semibold hover:bg-muted"
-              >
-                Ajouter une expérience
-              </Button>
-            )}
           </CardContent>
         </Card>
+
+        {/* Dialog Expériences Professionnelles */}
+        <Dialog open={expDialogOpen} onOpenChange={setExpDialogOpen}>
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>
+                {expDialogMode === "add" ? "Ajouter une expérience" : "Modifier l'expérience"}
+              </DialogTitle>
+              <DialogDescription>
+                {expDialogMode === "add"
+                  ? "Renseignez les informations de la nouvelle expérience."
+                  : "Modifiez les informations de l'expérience sélectionnée."}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-xs">Poste / Rôle</Label>
+                <Input
+                  value={expFormData.poste}
+                  onChange={(e) =>
+                    setExpFormData((prev) => ({ ...prev, poste: e.target.value }))
+                  }
+                  placeholder="Ex: Directeur Général"
+                  className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs">Employeur</Label>
+                  <Input
+                    value={expFormData.employeur}
+                    onChange={(e) =>
+                      setExpFormData((prev) => ({ ...prev, employeur: e.target.value }))
+                    }
+                    placeholder="Ex: CNF"
+                    className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Lieu</Label>
+                  <Input
+                    value={expFormData.lieu}
+                    onChange={(e) =>
+                      setExpFormData((prev) => ({ ...prev, lieu: e.target.value }))
+                    }
+                    placeholder="Ex: Abidjan, CI"
+                    className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs">Date de début</Label>
+                  <Input
+                    value={expFormData.dateDebut}
+                    onChange={(e) =>
+                      setExpFormData((prev) => ({ ...prev, dateDebut: e.target.value }))
+                    }
+                    placeholder="Ex: Jan 2020"
+                    className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Date de fin</Label>
+                  <Input
+                    value={expFormData.dateFin}
+                    onChange={(e) =>
+                      setExpFormData((prev) => ({ ...prev, dateFin: e.target.value }))
+                    }
+                    placeholder="Ex: Présent"
+                    className="h-9 border-border bg-background text-sm shadow-none focus-visible:border-primary focus-visible:ring-0"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Description des missions</Label>
+                <textarea
+                  value={expFormData.description}
+                  onChange={(e) =>
+                    setExpFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
+                  rows={3}
+                  placeholder="Décrivez les missions et responsabilités..."
+                  className="w-full min-w-0 rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setExpDialogOpen(false)}
+              >
+                Annuler
+              </Button>
+              <Button onClick={saveExpDialog}>
+                {expDialogMode === "add" ? "Ajouter" : "Enregistrer"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Aptitudes & Certifications */}
         <Card className="border-border bg-card shadow-none lg:col-span-2">

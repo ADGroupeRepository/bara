@@ -1,177 +1,163 @@
 "use client"
 
-import {
-  Building2,
-  Mail,
-  Phone,
-  Globe,
-  MapPin,
-  Pencil,
-  FileText,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Field, FieldLabel, FieldContent } from "@/components/ui/field"
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { EditableCardHeader } from "@/components/rh/employee-profile/editable-card-header"
+import { EditableInfoRow } from "@/components/rh/employee-profile/editable-info-row"
+import { useCardEditing } from "@/components/rh/employee-profile/use-card-editing"
 
 export function GeneralInfoTab() {
   return (
-    <div className="py-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
-          <div className="space-y-1">
-            <CardTitle>Informations de l&apos;entreprise</CardTitle>
-            <CardDescription>
-              Gérez les détails légaux et les coordonnées de votre structure.
-            </CardDescription>
-          </div>
-          <Button size="sm" className="gap-2">
-            <Pencil className="h-4 w-4" />
-            Modifier
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-8 pt-2">
-          <div className="grid gap-8 md:grid-cols-2">
-            {/* Identity Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 font-semibold text-primary pb-2 border-b">
-                <Building2 className="h-5 w-5" />
-                <span>Identité légale</span>
-              </div>
-              <div className="space-y-4">
-                <Field>
-                  <FieldLabel htmlFor="companyName">Nom commercial</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="companyName"
-                      defaultValue="AD Groupe"
-                      placeholder="Nom de l'entreprise"
-                    />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="legalName">Raison sociale</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      id="legalName"
-                      defaultValue="AD Groupe SARL"
-                      placeholder="Raison sociale"
-                    />
-                  </FieldContent>
-                </Field>
-                <div className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="tin">NIF / Numéro fiscal</FieldLabel>
-                    <FieldContent>
-                      <Input id="tin" defaultValue="1234567A" placeholder="NIF" />
-                    </FieldContent>
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="registration">RCCM</FieldLabel>
-                    <FieldContent>
-                      <Input
-                        id="registration"
-                        defaultValue="CI-ABJ-01-2024-B12"
-                        placeholder="RCCM"
-                      />
-                    </FieldContent>
-                  </Field>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 font-semibold text-primary pb-2 border-b">
-                <MapPin className="h-5 w-5" />
-                <span>Siège & Contact</span>
-              </div>
-              <div className="space-y-4">
-                <Field>
-                  <FieldLabel htmlFor="address">Adresse du siège</FieldLabel>
-                  <FieldContent>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="address"
-                        className="pl-9"
-                        defaultValue="Abidjan, Le Plateau, Avenue Marchand"
-                      />
-                    </div>
-                  </FieldContent>
-                </Field>
-                <div className="grid grid-cols-2 gap-4">
-                  <Field>
-                    <FieldLabel htmlFor="phone">Téléphone</FieldLabel>
-                    <FieldContent>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="phone"
-                          className="pl-9"
-                          defaultValue="+225 07 00 00 00 00"
-                        />
-                      </div>
-                    </FieldContent>
-                  </Field>
-                  <Field>
-                    <FieldLabel htmlFor="email">Email de contact</FieldLabel>
-                    <FieldContent>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          id="email"
-                          className="pl-9"
-                          defaultValue="contact@adgroupe.ci"
-                        />
-                      </div>
-                    </FieldContent>
-                  </Field>
-                </div>
-                <Field>
-                  <FieldLabel htmlFor="website">Site web</FieldLabel>
-                  <FieldContent>
-                    <div className="relative">
-                      <Globe className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="website"
-                        className="pl-9"
-                        defaultValue="https://www.adgroupe.ci"
-                      />
-                    </div>
-                  </FieldContent>
-                </Field>
-              </div>
-            </div>
-          </div>
-
-          {/* Presentation Section */}
-          <div className="space-y-4 pt-4 border-t">
-            <div className="flex items-center gap-2 font-semibold text-primary pb-2 border-b">
-              <FileText className="h-5 w-5" />
-              <span>Présentation de l&apos;entreprise</span>
-            </div>
-            <Field>
-              <FieldLabel htmlFor="description">Description / Activités</FieldLabel>
-              <FieldContent>
-                <Textarea
-                  id="description"
-                  placeholder="Décrivez les activités et l'histoire de votre entreprise..."
-                  className="min-h-[120px]"
-                  defaultValue="AD Groupe est un leader dans la fourniture de solutions technologiques innovantes pour les entreprises. Depuis notre création, nous nous efforçons de digitaliser les processus métiers pour améliorer l'efficacité et la productivité de nos clients."
-                />
-              </FieldContent>
-            </Field>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="grid gap-6 py-4 lg:grid-cols-2">
+      <LegalIdentityCard />
+      <ContactCard />
+      <div className="lg:col-span-2">
+        <PresentationCard />
+      </div>
     </div>
+  )
+}
+
+function LegalIdentityCard() {
+  const [data, setData] = useState({
+    nomCommercial: "AD Groupe",
+    raisonSociale: "AD Groupe SARL",
+    nif: "1234567A",
+    rccm: "CI-ABJ-01-2024-B12",
+  })
+  const edit = useCardEditing(data)
+
+  return (
+    <Card className="border-border bg-card shadow-none">
+      <EditableCardHeader
+        title="Identité légale"
+        description="Informations légales de l'entreprise"
+        isEditing={edit.isEditing}
+        onEdit={edit.startEditing}
+        onCancel={edit.cancelEditing}
+        onSave={() => setData(edit.saveEditing() as typeof data)}
+      />
+      <CardContent>
+        <div className="space-y-4">
+          <EditableInfoRow
+            label="Nom commercial"
+            value={edit.isEditing ? edit.formData.nomCommercial : data.nomCommercial}
+            fieldKey="nomCommercial"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+          <EditableInfoRow
+            label="Raison sociale"
+            value={edit.isEditing ? edit.formData.raisonSociale : data.raisonSociale}
+            fieldKey="raisonSociale"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+          <EditableInfoRow
+            label="NIF / Numéro fiscal"
+            value={edit.isEditing ? edit.formData.nif : data.nif}
+            fieldKey="nif"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+          <EditableInfoRow
+            label="RCCM"
+            value={edit.isEditing ? edit.formData.rccm : data.rccm}
+            fieldKey="rccm"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function ContactCard() {
+  const [data, setData] = useState({
+    adresse: "Abidjan, Le Plateau, Avenue Marchand",
+    telephone: "+225 07 00 00 00 00",
+    email: "contact@adgroupe.ci",
+    siteWeb: "https://www.adgroupe.ci",
+  })
+  const edit = useCardEditing(data)
+
+  return (
+    <Card className="border-border bg-card shadow-none">
+      <EditableCardHeader
+        title="Siège & Contact"
+        description="Coordonnées de base"
+        isEditing={edit.isEditing}
+        onEdit={edit.startEditing}
+        onCancel={edit.cancelEditing}
+        onSave={() => setData(edit.saveEditing() as typeof data)}
+      />
+      <CardContent>
+        <div className="space-y-4">
+          <EditableInfoRow
+            label="Adresse du siège"
+            value={edit.isEditing ? edit.formData.adresse : data.adresse}
+            fieldKey="adresse"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+          <EditableInfoRow
+            label="Téléphone"
+            value={edit.isEditing ? edit.formData.telephone : data.telephone}
+            fieldKey="telephone"
+            type="tel"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+          <EditableInfoRow
+            label="Email de contact"
+            value={edit.isEditing ? edit.formData.email : data.email}
+            fieldKey="email"
+            type="email"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+          <EditableInfoRow
+            label="Site web"
+            value={edit.isEditing ? edit.formData.siteWeb : data.siteWeb}
+            fieldKey="siteWeb"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PresentationCard() {
+  const [data, setData] = useState({
+    description: "AD Groupe est un leader dans la fourniture de solutions technologiques innovantes pour les entreprises. Depuis notre création, nous nous efforçons de digitaliser les processus métiers pour améliorer l'efficacité et la productivité de nos clients.",
+  })
+  const edit = useCardEditing(data)
+
+  return (
+    <Card className="border-border bg-card shadow-none">
+      <EditableCardHeader
+        title="Présentation de l'entreprise"
+        description="Description et activités"
+        isEditing={edit.isEditing}
+        onEdit={edit.startEditing}
+        onCancel={edit.cancelEditing}
+        onSave={() => setData(edit.saveEditing() as typeof data)}
+      />
+      <CardContent>
+        <div className="space-y-4">
+          <EditableInfoRow
+            label="Description / Activités"
+            value={edit.isEditing ? edit.formData.description : data.description}
+            fieldKey="description"
+            type="textarea"
+            isEditing={edit.isEditing}
+            onChange={edit.updateField}
+          />
+        </div>
+      </CardContent>
+    </Card>
   )
 }

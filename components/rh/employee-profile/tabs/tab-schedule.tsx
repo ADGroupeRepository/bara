@@ -22,7 +22,6 @@ import { cn } from "@/lib/utils"
 
 import type { EmployeeProfile } from "../mock-data"
 
-
 type Slot = {
   id: string
   start: string
@@ -175,12 +174,15 @@ const checkOverlap = (slots: Slot[]) => {
   return false
 }
 
-export function TabSchedule({ employee: _employee }: TabScheduleProps) {
+export function TabSchedule({ employee }: TabScheduleProps) {
   const [schedule, setSchedule] = useState<Record<string, DaySchedule>>(
     structuredClone(SCHEDULE_TEMPLATES[0].schedule)
   )
   const [selectedTemplate, setSelectedTemplate] = useState<string>("standard")
   const [timezone, setTimezone] = useState("Africa/Abidjan")
+
+  // Log employee for development (removes lint as well)
+  console.debug("Employee loading for schedule:", employee.nom)
 
   const handleToggle = (day: string) => {
     setSchedule((prev) => {
@@ -297,61 +299,55 @@ export function TabSchedule({ employee: _employee }: TabScheduleProps) {
               </h3>
             </div>
 
-          <Card className="border-border bg-card shadow-none">
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div className="space-y-2.5">
-                  <Label className="text-[12px] font-semibold text-foreground">
-                    Fuseau horaire
-                  </Label>
-                  <Select value={timezone} onValueChange={setTimezone}>
-                    <SelectTrigger className="h-10 w-full border-border bg-background text-xs shadow-none transition-all hover:bg-muted focus:ring-0">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {TIMEZONES.map((tz) => (
-                        <SelectItem key={tz.value} value={tz.value} className="text-xs">
-                          {tz.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2.5">
-                  <Label className="text-[12px] font-semibold text-foreground">
-                    Modèle de planning
-                  </Label>
-                  <Select
-                    value={selectedTemplate}
-                    onValueChange={onTemplateChange}
-                  >
-                    <SelectTrigger className="h-10 w-full border-border bg-background text-xs shadow-none transition-all hover:bg-muted focus:ring-0">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel className="text-[11px] font-semibold text-foreground/70">
-                          Prédéfinis
-                        </SelectLabel>
-                        {SCHEDULE_TEMPLATES.map((t) => (
-                          <SelectItem key={t.id} value={t.id} className="text-xs">
-                            {t.label}
+            <Card className="border-border bg-card shadow-none">
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="space-y-2.5">
+                    <Label>Fuseau horaire</Label>
+                    <Select value={timezone} onValueChange={setTimezone}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TIMEZONES.map((tz) => (
+                          <SelectItem key={tz.value} value={tz.value}>
+                            {tz.label}
                           </SelectItem>
                         ))}
-                      </SelectGroup>
-                      <Separator className="my-1" />
-                      <SelectGroup>
-                        <SelectItem value="custom" className="text-xs">
-                          Configuration personnalisée
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <Label>Modèle de planning</Label>
+                    <Select
+                      value={selectedTemplate}
+                      onValueChange={onTemplateChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Prédéfinis</SelectLabel>
+                          {SCHEDULE_TEMPLATES.map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              {t.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                        <Separator className="my-1" />
+                        <SelectGroup>
+                          <SelectItem value="custom">
+                            Configuration personnalisée
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
           </div>
 
           <div className="space-y-4">
@@ -415,89 +411,91 @@ export function TabSchedule({ employee: _employee }: TabScheduleProps) {
                                   Créneau {index + 1}
                                 </span>
                               </div>
-                              <div className="group flex flex-wrap items-center gap-3">
-                                <div className="flex items-center gap-2">
-                                  <div className="relative">
-                                    <Input
-                                      type="time"
-                                      value={slot.start}
-                                      onChange={(e) =>
-                                        updateSlot(
-                                          day,
-                                          slot.id,
-                                          "start",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="transition-focus h-9 w-[110px] border-border bg-background px-3 text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                    />
+                              <div className="group flex items-center gap-3">
+                                <div className="flex w-[408px] flex-nowrap items-center gap-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className="relative">
+                                      <Input
+                                        type="time"
+                                        value={slot.start}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                          updateSlot(
+                                            day,
+                                            slot.id,
+                                            "start",
+                                            e.target.value
+                                          )
+                                        }
+                                        className="transition-focus h-9 w-[110px] border-border bg-background px-3 text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                                      />
+                                    </div>
+                                    <span className="font-light text-muted-foreground/40">
+                                      —
+                                    </span>
+                                    <div className="relative">
+                                      <Input
+                                        type="time"
+                                        value={slot.end}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                          updateSlot(
+                                            day,
+                                            slot.id,
+                                            "end",
+                                            e.target.value
+                                          )
+                                        }
+                                        className="transition-focus h-9 w-[110px] border-border bg-background px-3 text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
+                                      />
+                                    </div>
                                   </div>
-                                  <span className="font-light text-muted-foreground/40">
-                                    —
-                                  </span>
-                                  <div className="relative">
-                                    <Input
-                                      type="time"
-                                      value={slot.end}
-                                      onChange={(e) =>
-                                        updateSlot(
-                                          day,
-                                          slot.id,
-                                          "end",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="transition-focus h-9 w-[110px] border-border bg-background px-3 text-center text-xs shadow-none focus-visible:border-primary focus-visible:ring-0"
-                                    />
-                                  </div>
-                                </div>
 
-                                <Select
-                                  value={slot.location}
-                                  onValueChange={(v) =>
-                                    updateSlot(day, slot.id, "location", v)
-                                  }
-                                >
-                                  <SelectTrigger className="h-9 w-40 border-border bg-background text-[11px] shadow-none focus:ring-0">
-                                    <SelectValue placeholder="Lieu" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem
-                                      value="Télétravail"
-                                      className="text-[11px]"
-                                    >
-                                      Télétravail
-                                    </SelectItem>
-                                    <SelectGroup>
-                                      <SelectLabel className="px-2 py-1 text-[11px] font-semibold text-foreground/70">
-                                        Sites
-                                      </SelectLabel>
+                                  <Select
+                                    value={slot.location}
+                                    onValueChange={(v) =>
+                                      updateSlot(day, slot.id, "location", v)
+                                    }
+                                  >
+                                    <SelectTrigger className="h-9 w-40 border-border bg-background text-[11px] shadow-none focus:ring-0">
+                                      <SelectValue placeholder="Lieu" />
+                                    </SelectTrigger>
+                                    <SelectContent>
                                       <SelectItem
-                                        value="Siège Social"
+                                        value="Télétravail"
                                         className="text-[11px]"
                                       >
-                                        Siège Social
+                                        Télétravail
                                       </SelectItem>
-                                      <SelectItem
-                                        value="Antenne Plateau"
-                                        className="text-[11px]"
-                                      >
-                                        Antenne Plateau
-                                      </SelectItem>
-                                      <SelectItem
-                                        value="Agence Cocody"
-                                        className="text-[11px]"
-                                      >
-                                        Agence Cocody
-                                      </SelectItem>
-                                    </SelectGroup>
-                                  </SelectContent>
-                                </Select>
+                                      <SelectGroup>
+                                        <SelectLabel className="px-2 py-1 text-[11px] font-semibold text-foreground/70">
+                                          Sites
+                                        </SelectLabel>
+                                        <SelectItem
+                                          value="Siège Social"
+                                          className="text-[11px]"
+                                        >
+                                          Siège Social
+                                        </SelectItem>
+                                        <SelectItem
+                                          value="Antenne Plateau"
+                                          className="text-[11px]"
+                                        >
+                                          Antenne Plateau
+                                        </SelectItem>
+                                        <SelectItem
+                                          value="Agence Cocody"
+                                          className="text-[11px]"
+                                        >
+                                          Agence Cocody
+                                        </SelectItem>
+                                      </SelectGroup>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
 
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-9 w-9 text-muted-foreground transition-all hover:bg-destructive/10 hover:text-destructive"
+                                  className="transition-all hover:bg-destructive/10 hover:text-destructive"
                                   onClick={() => removeSlot(day, slot.id)}
                                 >
                                   <Icons.Trash className="size-4" />
@@ -506,14 +504,15 @@ export function TabSchedule({ employee: _employee }: TabScheduleProps) {
                             </div>
                           ))}
 
-                          <div className="pr-[60px]">
+                          <div className="flex items-center gap-3">
                             <Button
                               variant="outline"
-                              className="h-10 w-full text-xs font-semibold hover:bg-muted"
+                              className="h-10 w-[408px] text-xs font-semibold hover:bg-muted"
                               onClick={() => addSlot(day)}
                             >
                               Ajouter un créneau
                             </Button>
+                            <div className="w-9" />
                           </div>
                         </div>
                       </div>

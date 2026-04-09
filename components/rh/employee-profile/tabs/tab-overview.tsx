@@ -1,9 +1,14 @@
 "use client"
 
-import { cn } from "@/lib/utils"
-
 import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import type { EmployeeProfile } from "../mock-data"
 import { EditableInfoRow } from "../editable-info-row"
@@ -48,6 +53,33 @@ const GRADE_OPTIONS = [
   { value: "Directeur", label: "Directeur" },
 ]
 
+const MANAGERS = [
+  { value: "Siaka Sylla", label: "Siaka Sylla", avatar: "/homme01.png" },
+  { value: "Jean Dupont", label: "Jean Dupont", avatar: "/homme02.png" },
+  { value: "Marissa Koné", label: "Marissa Koné", avatar: "/femme01.png" },
+  { value: "Alassane Traoré", label: "Alassane Traoré", avatar: "/homme03.png" },
+  { value: "Evelyne Kouassi", label: "Evelyne Kouassi", avatar: "/femme02.png" },
+]
+
+const VILLE_OPTIONS = [
+  { value: "Abidjan", label: "Abidjan" },
+  { value: "Bouaké", label: "Bouaké" },
+  { value: "Daloa", label: "Daloa" },
+  { value: "Yamoussoukro", label: "Yamoussoukro" },
+  { value: "San Pedro", label: "San Pedro" },
+  { value: "Korhogo", label: "Korhogo" },
+  { value: "Man", label: "Man" },
+]
+
+const NATIONALITE_OPTIONS = [
+  { value: "Ivoirienne", label: "Ivoirienne" },
+  { value: "Sénégalaise", label: "Sénégalaise" },
+  { value: "Malienne", label: "Malienne" },
+  { value: "Burkinabé", label: "Burkinabé" },
+  { value: "Française", label: "Française" },
+  { value: "Ghanéenne", label: "Ghanéenne" },
+]
+
 export function TabOverview({ employee }: TabOverviewProps) {
   return (
     <div className="grid gap-6 pb-6 lg:grid-cols-2">
@@ -69,8 +101,8 @@ function PersonalInfoCard({
     statut: employee.statut,
     civilite: employee.civilite,
     genre: employee.genre,
-    lieuNaissance: employee.lieuNaissance,
-    nationalite: employee.nationalite,
+    lieuNaissance: employee.lieuNaissance || "Abidjan",
+    nationalite: employee.nationalite || "Ivoirienne",
   })
 
   return (
@@ -130,6 +162,7 @@ function PersonalInfoCard({
             options={STATUT_OPTIONS}
             badge={!personalEdit.isEditing}
             badgeVariant={employee.statut === "Actif" ? "default" : "secondary"}
+            layout="horizontal"
           />
           <EditableInfoRow
             label="Civilité"
@@ -158,24 +191,28 @@ function PersonalInfoCard({
           <EditableInfoRow
             label="Lieu de naissance"
             value={
-              personalEdit.isEditing
+              (personalEdit.isEditing
                 ? personalEdit.formData.lieuNaissance
-                : employee.lieuNaissance
+                : employee.lieuNaissance) || "Abidjan"
             }
             fieldKey="lieuNaissance"
             isEditing={personalEdit.isEditing}
             onChange={personalEdit.updateField}
+            options={VILLE_OPTIONS}
+            placeholder="Abidjan"
           />
           <EditableInfoRow
             label="Nationalité"
             value={
-              personalEdit.isEditing
+              (personalEdit.isEditing
                 ? personalEdit.formData.nationalite
-                : employee.nationalite
+                : employee.nationalite) || "Ivoirienne"
             }
             fieldKey="nationalite"
             isEditing={personalEdit.isEditing}
             onChange={personalEdit.updateField}
+            options={NATIONALITE_OPTIONS}
+            placeholder="Ivoirienne"
           />
         </div>
       </CardContent>
@@ -221,7 +258,9 @@ function ProfessionalInfoCard({
           <EditableInfoRow
             label="Matricule"
             value={
-              proEdit.isEditing ? proEdit.formData.matricule : employee.matricule
+              proEdit.isEditing
+                ? proEdit.formData.matricule
+                : employee.matricule
             }
             fieldKey="matricule"
             isEditing={proEdit.isEditing}
@@ -256,42 +295,64 @@ function ProfessionalInfoCard({
           {/* Supérieur hiérarchique */}
           <div className="flex flex-col gap-1.5">
             <p className="text-xs">Supérieur hiérarchique</p>
-            <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9 shrink-0 rounded-md">
-                <AvatarFallback className="rounded-md bg-muted text-[10px] font-medium text-muted-foreground">
-                  {(proEdit.isEditing
-                    ? proEdit.formData.superieurHierarchique
-                    : employee.superieurHierarchique
-                  )
-                    ?.split(" ")
-                    .map((n: string) => n[0])
-                    .join("")
-                    .substring(0, 2)
-                    .toUpperCase() ?? "?"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  value={
-                    proEdit.isEditing
-                      ? proEdit.formData.superieurHierarchique
-                      : employee.superieurHierarchique
+            <div className="w-full">
+              {proEdit.isEditing ? (
+                <Select
+                  value={proEdit.formData.superieurHierarchique}
+                  onValueChange={(value) =>
+                    proEdit.updateField("superieurHierarchique", value)
                   }
-                  onChange={(e) =>
-                    proEdit.updateField("superieurHierarchique", e.target.value)
-                  }
-                  disabled={!proEdit.isEditing}
-                  className={cn(
-                    "h-9 w-full rounded-md border border-border/40 bg-background px-3 text-xs outline-none focus-visible:border-primary focus-visible:ring-0",
-                    !proEdit.isEditing &&
-                      "cursor-default border-border/20 bg-background font-medium opacity-100"
-                  )}
-                />
-                {!proEdit.isEditing && (
-                  <div className="absolute inset-0 z-10 cursor-default" />
-                )}
-              </div>
+                >
+                  <SelectTrigger className="h-10 w-full border-border/40 bg-background text-xs focus:ring-0 focus:ring-offset-0 px-2">
+                    <SelectValue placeholder="Sélectionner un manager" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MANAGERS.map((manager) => (
+                      <SelectItem key={manager.value} value={manager.value}>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="size-5 border border-border/10">
+                            <AvatarImage
+                              src={manager.avatar}
+                              alt={manager.label}
+                            />
+                            <AvatarFallback className="text-[8px] bg-muted/50">
+                              {manager.label
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")
+                                .substring(0, 2)
+                                .toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs">{manager.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-10 w-full items-center gap-2 rounded-md border border-input bg-transparent px-2 text-xs font-medium text-foreground/70 opacity-70">
+                  <Avatar className="size-6 border border-border/20">
+                    <AvatarImage
+                      src={
+                        MANAGERS.find(
+                          (m) => m.value === employee.superieurHierarchique
+                        )?.avatar
+                      }
+                      alt={employee.superieurHierarchique}
+                    />
+                    <AvatarFallback className="text-[8px] bg-muted/30">
+                      {employee.superieurHierarchique
+                        ?.split(" ")
+                        .map((n: string) => n[0])
+                        .join("")
+                        .substring(0, 2)
+                        .toUpperCase() ?? "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  {employee.superieurHierarchique}
+                </div>
+              )}
             </div>
           </div>
 
@@ -331,4 +392,3 @@ function ProfessionalInfoCard({
     </Card>
   )
 }
-

@@ -29,6 +29,14 @@ const TYPE_CONTRAT_OPTIONS = [
   { value: "Freelance", label: "Freelance" },
 ]
 
+const PERIODE_ESSAI_OPTIONS = [
+  { value: "1 mois", label: "1 mois" },
+  { value: "2 mois", label: "2 mois" },
+  { value: "3 mois", label: "3 mois" },
+  { value: "6 mois", label: "6 mois" },
+  { value: "Non applicable", label: "Non applicable" },
+]
+
 function calculateSeniority(dateString?: string) {
   if (!dateString) return "N/A"
   const parts = dateString.split("/")
@@ -97,8 +105,6 @@ export function TabContract({ employee }: TabContractProps) {
                 isEditing={adminEdit.isEditing}
                 onChange={adminEdit.updateField}
                 options={STATUT_OPTIONS}
-                badge={!adminEdit.isEditing}
-                badgeVariant={employee.statut === "Actif" ? "default" : "secondary"}
               />
               <EditableInfoRow
                 label="Date d'embauche"
@@ -133,6 +139,7 @@ export function TabContract({ employee }: TabContractProps) {
                   fieldKey="periodeEssai"
                   isEditing={adminEdit.isEditing}
                   onChange={adminEdit.updateField}
+                  options={PERIODE_ESSAI_OPTIONS}
                 />
               ) : null}
             </div>
